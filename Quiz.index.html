@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wielki Test Medyczny - 100 Pytań</title>
+    <style>
+        :root {
+            --bg-color: #f0f4f8;
+            --card-bg: #ffffff;
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --text: #1e293b;
+            --text-light: #64748b;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            max-width: 700px;
+            width: 100%;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .meta-info {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            margin-top: 0;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .option-btn {
+            background-color: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--text);
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background-color: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        .option-btn.correct {
+            background-color: #dcfce7;
+            border-color: var(--success);
+            color: #14532d;
+            font-weight: 600;
+        }
+
+        .option-btn.incorrect {
+            background-color: #fee2e2;
+            border-color: var(--danger);
+            color: #7f1d1d;
+        }
+
+        .explanation {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .explanation h4 {
+            margin: 0 0 5px 0;
+            color: #1e40af;
+        }
+
+        .explanation p {
+            margin: 0;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .action-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.2s;
+            display: none;
+        }
+
+        .action-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .results {
+            text-align: center;
+            display: none;
+        }
+
+        .results h2 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .score-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px auto;
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary);
+            border: 4px solid var(--primary);
+        }
+
+        .restart-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="quiz-screen">
+        <div class="progress-bar">
+            <div class="progress-fill" id="progress"></div>
+        </div>
+        <div class="meta-info">
+            <span>Pytanie <span id="current-question-num">1</span> z 100</span>
+            <span>Wynik: <span id="current-score">0</span></span>
+        </div>
+        
+        <h2 id="question-text">Pytanie ładuje się...</h2>
+        
+        <div class="options-grid" id="options-container"></div>
+        
+        <div class="explanation" id="explanation-box">
+            <h4 id="explanation-title">Wyjaśnienie:</h4>
+            <p id="explanation-text"></p>
+        </div>
+        
+        <button class="action-btn" id="next-btn" onclick="nextQuestion()">Następne pytanie</button>
+    </div>
+
+    <div class="results" id="results-screen">
+        <h2>Koniec Testu!</h2>
+        <p>Twój ostateczny wynik wynosi:</p>
+        <div class="score-circle" id="final-score">0/100</div>
+        <p id="feedback-text"></p>
+        <button class="restart-btn" onclick="restartQuiz()">Rozpocznij od nowa</button>
+    </div>
+</div>
+
+<script>
+// Baza 100 pytań medycznych o różnym poziomie trudności
+const questions = [
+    { q: "Która komora serca pompuje krew odtlenowaną do płuc?", options: ["Lewy przedsionek", "Lewa komora", "Prawy przedsionek", "Prawa komora"], answer: 3, exp: "Prawa komora tłoczy krew odtlenowaną z obwodu przez pień płucny do tętnic płucnych, prowadząc ją do płuc w celu wymiany gazowej." },
+    { q: "Jaka jest prawidłowa częstotliwość uciśnięć klatki piersiowej w CPR u dorosłego?", options: ["60-80 na minutę", "80-100 na minutę", "100-120 na minutę", "120-140 na minutę"], answer: 2, exp: "Zgodnie z wytycznymi ERC/AHA prawidłowe tempo uciśnięć klatki piersiowej u dorosłych wynosi 100–120 na minutę." },
+    { q: "Która kość jest najdłuższą i najcięższą kością w ciele człowieka?", options: ["Kość ramienna", "Kość udowa", "Kość piszczelowa", "Miednica"], answer: 1, exp: "Kość udowa (femur) to najdłuższa, najcięższa i najbardziej wytrzymała kość w ludzkim szkielecie." },
+    { q: "Jaki hormon jest wyłączną przyczyną obniżania poziomu glukozy we krwi?", options: ["Glukagon", "Insulina", "Kortyzol", "Adrenalina"], answer: 1, exp: "Insulina, wydzielana przez komórki beta trzustki, jest jedynym hormonem bezpośrednio obniżającym stężenie glukozy we krwi." },
+    { q: "Który nerw czaszkowy odpowiada za unerwienie narządów klatki piersiowej i jamy brzusznej?", options: ["X - Nerw błędny", "V - Nerw trójdzielny", "VII - Nerw twarzowy", "XII - Nerw podjęzykowy"], answer: 0, exp: "Nerw błędny (X) jest głównym nerwem przywspółczulnym unerwiającym serce, płuca oraz przewód pokarmowy." },
+    { q: "Jaka jest normalna objętość wyrzutowa (SV) serca u dorosłego spoczynkowo?", options: ["ok. 30 ml", "ok. 70 ml", "ok. 150 ml", "ok. 500 ml"], answer: 1, exp: "Objętość wyrzutowa serca u zdrowego dorosłego człowieka w odpoczynku wynosi około 70 ml na jeden skurcz." },
+    { q: "Gdzie w organizmie człowieka powstaje erytropoetyna (EPO)?", options: ["W wątrobie", "W śledzionie", "W nerkach", "W szpiku kostnym"], answer: 2, exp: "Około 90% erytropoetyny (hormonu stymulującego produkcję krwinek czerwonych) wytwarzane jest w miąższu nerek." },
+    { q: "Który narząd jest głównym miejscem metabolizmu większości leków?", options: ["Nerki", "Płuca", "Wątroba", "Jelito cienkie"], answer: 2, exp: "Wątroba zawiera bogaty zestaw enzymów (np. cytochrom P450), odpowiadających za biotransformację substancji chemicznych i leków." },
+    { q: "Jak nazywa się podstawowa jednostka strukturalna i funkcjonalna nerki?", options: ["Neuron", "Nefron", "Pęcherzyk", "Kłębuszek"], answer: 1, exp: "Nefron jest podstawową jednostką anatomiczno-czynnościową nerki. W każdej nerce znajduje się około 1-1,5 miliona nefronów." },
+    { q: "Objaw Blumberga jest charakterystyczny dla zakażenia/podrażnienia:", options: ["Odpływu żołądkowego", "Otrzewnej", "Opłucnej", "Odwężyna"], answer: 1, exp: "Objaw Blumberga (ból przy nagłym zwolnieniu ucisku powłok brzusznych) wskazuje na zapalenie otrzewnej." },
+    { q: "Co jest bezpośrednią przyczyną krzywicy u dzieci?", options: ["Niedobór witaminy C", "Niedobór witaminy D", "Niedobór witaminy A", "Niedobór żelaza"], answer: 1, exp: "Niedobór witaminy D zaburza wchłanianie wapnia i fosforu, prowadząc do nieprawidłowego mineralizowania kości u dzieci (krzywica)." },
+    { q: "Jaki jest prawidłowy stosunek uciśnięć klatki piersiowej do oddechów w RKO u dorosłego?", options: ["15:2", "30:2", "5:1", "50:2"], answer: 1, exp: "W resuscytacji krążeniowo-oddechowej u dorosłych stosuje się proporcję 30 uciśnięć do 2 wdechów ratowniczych." },
+    { q: "Który ze składników krwi odpowiada za proces krzepnięcia?", options: ["Erytrocyty", "Leukocyty", "Trombocyty", "Limfocyty"], answer: 2, exp: "Trombocyty (płytki krwi) biorą udział w tworzeniu czopu płytkowego i aktywacji kaskady krzepnięcia." },
+    { q: "Najczęstszą przyczyną zawału mięśnia sercowego jest:", options: ["Skurcz tętnicy płucnej", "Miażdżyca tętnic wieńcowych", "Zapelenie osierdzia", "Niewydolność zastawki aortalnej"], answer: 1, exp: "Pęknięcie blaszki miażdżycowej w tętnicy wieńcowej i utworzenie wykrzepiny zamykającej naczynie prowadzi do zawału." },
+    { q: "Która witamina jest rozpuszczalna w wodzie?", options: ["Witamina A", "Witamina D", "Witamina C", "Witamina K"], answer: 2, exp: "Witamina C (kwas askorbinowy) oraz witaminy z grupy B są rozpuszczalne w wodzie. Witaminy A, D, E, K rozpuszczają się w tłuszczach." },
+    { q: "Która część mózgu odpowiada głównie za koordynację ruchową i równowagę?", options: ["Móżdżek", "Płat czołowy", "Wzgórze", "Płat potyliczny"], answer: 0, exp: "Móżdżek odgrywa kluczową rolę w kontroli ruchu, precyzji, koordynacji oraz utrzymaniu równowagi ciała." },
+    { q: "Najmniejsze naczynia krwionośne, w których zachodzi wymiana substancji z tkankami to:", options: ["Tętniczki", "Żyłki", "Włosowate (kapilary)", "Zatoki"], answer: 2, exp: "Naczynia włosowate mają bardzo cienką ściankę (jednowarstwowy nabłonek), co umożliwia dyfuzję gazów i składników odżywczych." },
+    { q: "Żółtaczka pojawia się przy podwyższonym poziomie jakiej substancji we krwi?", options: ["Mocznika", "Bilirubiny", "Kreatyniny", "Kwasu moczowego"], answer: 1, exp: "Bilirubina to żółty barwnik pochodzący z rozpadu hemoglobiny. Jej nadmiar we krwi odkłada się w tkankach, wywołując żółtaczkę." },
+    { q: "Główny narząd limfatyczny odpowiedzialny za filtrowanie krwi ze starych erytrocytów to:", options: ["Węzły chłonne", "Grasica", "Śledziona", "Migdałki"], answer: 2, exp: "Śledziona wychwytuje i niszczy zużyte krwinki czerwone oraz uczestniczy w odpowiedzi immunologicznej." },
+    { q: "Jaka zastawka zapobiega cofaniu się krwi z lewej komory do lewego przedsionka?", options: ["Dwudzielna (mitralna)", "Trójdzielna", "Aortalna", "Płucna"], answer: 0, exp: "Zastawka dwudzielna (mitralna) znajduje się między lewym przedsionkiem a lewą komorą serca." },
+    { q: "Z ilu kręgów składa się odcinka szyjny kręgosłupa człowieka?", options: ["5", "7", "12", "4"], answer: 1, exp: "Odcinek szyjny kręgosłupa człowieka (oraz niemal wszystkich ssaków) składa się z 7 kręgów (C1-C7)." },
+    { q: "Co wywołuje chorobę zwaną tężcem?", options: ["Wirus", "Grzyb", "Bakteria laseczka tężca", "Pasożyt"], answer: 2, exp: "Tężec jest wywoływany przez neurotoksynę produkowaną przez beztlenową bakterię Clostridium tetani." },
+    { q: "Jaka płynna część krwi stanowi około 55% jej całkowitej objętości?", options: ["Surowica", "Osocze", "Lymphat", "Płyn śródmiąższowy"], answer: 1, exp: "Osocze krwi (plazma) stanowi ok. 55% objętości krwi; reszta to elementy morfotyczne." },
+    { q: "Zwiększone stężenie dwutlenku węgla we krwi nazywamy:", options: ["Hipotermią", "Hyperkapnią", "Hipoksją", "Hyperoksją"], answer: 1, exp: "Hiperkapnia to stan podwyższonego ciśnienia parcjalnego CO2 we krwi (pCO2 > 45 mmHg)." },
+    { q: "Która struktura oka odpowiada za ostrość widzenia w warunkach dobrego oświetlenia i rozpoznawanie barw?", options: ["Pręciki", "Czopki", "Rogówka", "Tęczówka"], answer: 1, exp: "Czopki odpowiadają za widzenie kolorowe i ostre w świetle dziennym. Pręciki odpowiadają za widzenie zmierzchowe." },
+    { q: "Główną cząsteczką przenoszącą energię w komórkach ludzkich jest:", options: ["DNA", "ATP", "RNA", "NADH"], answer: 1, exp: "ATP (adenozynotrójfosforan) jest uniwersalnym nośnikiem energii chemicznej w komórkach." },
+    { q: "Gdzie dochodzi do zapłodnienia komórki jajowej w prawidłowo przebiegającym procesie?", options: ["W macicy", "W jajowodzie", "W jajniku", "W pochwie"], answer: 1, exp: "Do zapłodnienia dochodzi najczęściej w bańce jajowodu, skąd zapłodniona komórka wędruje do macicy." },
+    { q: "Brak jakiego czynnika jest przyczyną hemofilii typu A?", options: ["Czynnika VIII", "Czynnika IX", "Czynnika XI", "Fibrynogenu"], answer: 0, exp: "Hemofilia A jest osoczową skazą krwotoczną uwarunkowaną genetycznie, wynikającą z niedoboru czynnika krzepnięcia VIII." },
+    { q: "Kwas żołądkowy (solny) wydzielany jest przez komórki:", options: ["Główne", "Okładzinowe", "Śluzowe", "G-komórki"], answer: 1, exp: "Komórki okładzinowe gruczołów żołądkowych odpowiadają za wydzielanie kwasu solnego (HCl) oraz czynnika Castle'a." },
+    { q: "Udary mózgu dzielimy na dwie główne kategorie:", options: ["Zapalne i bakteryjne", "Niedokrwienne i krwotoczne", "Sercowe i obwodowe", "Pierwotne i wtórne"], answer: 1, exp: "Około 80-85% udarów to udary niedokrwienne (zatkanie naczynia), a pozostałe to udary krwotoczne (pęknięcie naczynia)." },
+    { q: "Który enzym ślinowy rozpoczyna trawienie węglowodanów w jamie ustnej?", options: ["Pepsyna", "Ptialina (amylaza ślinowa)", "Lipaza", "Trypsyna"], answer: 1, exp: "Amylaza ślinowa (ptialina) rozkłada skrobię i glikogen na mniejsze cukry (maltozę, dekstryny)." },
+    { q: "Rachunek tzw. 'reguły dziewiątek' służy do szacowania:", options: ["Powierzchni oparzeń ciała", "Stopnia udaru mózgu", "Utraty krwi", "Głębokości śpiączki"], answer: 0, exp: "Reguła dziewiątek Wallace'a służy do szybkiego szacowania procentowej powierzchni poparzonego ciała u dorosłych." },
+    { q: "Jaka jest prawidłowa wartość glikemii na czczo u zdrowego dorosłego?", options: ["40-60 mg/dl", "70-99 mg/dl", "100-125 mg/dl", "140-200 mg/dl"], answer: 1, exp: "Prawidłowa glikemia na czczo w krew obwodowej wynosi 70–99 mg/dl (3,9–5,5 mmol/l)." },
+    { q: "Który nerw jest odpowiedzialny za opadanie kącika ust i brak możliwości zamknięcia oka przy porażeniu obwodowym?", options: ["Trójdzielny (V)", "Twarzowy (VII)", "Błędny (X)", "Dodatkowy (XI)"], answer: 1, exp: "Porażenie nerwu twarzowego (VII) wywołuje wiotkość mięśni mimicznych połowy twarzy." },
+    { q: "Biała substancja w mózgowiu składa się głównie z:", options: ["Ciał komórek nerwowych", "Aksonów z osłonką mielinową", "Naczyń krwionośnych", "Płynu mózgowo-rdzeniowego"], answer: 1, exp: "Istota biała tworzona jest przez wypustki osłonięte mieliną (aksony), odpowiedzialne za przewodzenie impulsów." },
+    { q: "Która tętnica jako jedyna prowadzi krew odtlenowaną?", options: ["Tętnica szyjna", "Tętnica płucna", "Tętnica udowa", "Aorta"], answer: 1, exp: "Tętnica płucna (pień płucny) prowadzi odtlenowaną krew z prawej komory serca do płuc." },
+    { q: "Główny narząd odpowiadający za produkcję białek osocza (np. albumin) to:", options: ["Śledziona", "Nerka", "Wątroba", "Szpik"], answer: 2, exp: "Wątroba syntetyzuje zdecydowaną większość białek osocza krążącego, w tym albuminę i czynniki krzepnięcia." },
+    { q: "Wskazaniem do natychmiastowego użycia defibrylatora AED jest:", options: ["Asystolia", "Migotanie komór (VF)", "Częstoskurcz nadkomorowy", "Prawidłowy rytm zatokowy"], answer: 1, exp: "AED analizuje rytm i aplikuje impuls w rytmach do defibrylacji: migotaniu komór (VF) oraz częstoskurczu komorowym bez tętna (VT)." },
+    { q: "Który hormon jest wydzielany przez rdzeń nadnerczy w odpowiedzi na stres?", options: ["Kortyzol", "Adrenalina", "Aldosteron", "Thyroksyna"], answer: 1, exp: "Rdzeń nadnerczy wydziela katecholaminy – głównie adrenalinę i noradrenalinę – przygotowujące organizm do reakcji 'walcz lub uciekaj'." },
+    { q: "Jak nazywa się stan, w którym ciało ma temperaturę poniżej 35°C?", options: ["Hipertermia", "Gorączka", "Hipotermia", "Zapaść"], answer: 2, exp: "Hipotermia to obniżenie głębokiej temperatury ciała poniżej 35°C." },
+    { q: "Gdzie znajduje się ośrodek oddechowy w mózgowiu?", options: ["W korze mózgowej", "W pniu mózgu (most i rdzeń przedłużony)", "W móżdżku", "W płacie skroniowym"], answer: 1, exp: "Automatyczna kontrola oddechu odbywa się w ośrodku oddechowym zlokalizowanym w rdzeniu przedłużonym i moście." },
+    { q: "Stwardnienie rozsiane (SM) jest chorobą wywołującą uszkodzenie:", options: ["Jąder podstawy", "Osłonki mielinowej aksonów", "Płytki motorycznej", "Chrząstki stawowej"], answer: 1, exp: "SM to przewlekła autoimmunologiczna choroba demielinizacyjna ośrodkowego układu nerwowego." },
+    { q: "Najbardziej powszechny typ grupy krwi na świecie to:", options: ["AB Rh+", "A Rh+", "0 Rh+", "B Rh-"], answer: 2, exp: "Grupa 0 Rh+ jest globalnie najbardziej powszechną grupą krwi u ludzi." },
+    { q: "Które krwinki nie posiadają jądra komórkowego u ssaków?", options: ["Monocyty", "Dojrzałe erytrocyty", "Neutrofile", "Limfocyty B"], answer: 1, exp: "Dojrzałe erytrocyty ssaków w toku ewolucji utraciły jądro komórkowe, aby zwolnić miejsce na hemoglobinę." },
+    { q: "Kwas foliowy jest szczególnie kluczowy dla kobiet w ciąży, gdyż zapobiega:", options: ["Krzywicy", "Wadom cewy nerwowej u płodu", "Cukrzycy ciążowej", "Anemii sierpowatej"], answer: 1, exp: "Suplementacja kwasu foliowego przed i w trakcie ciąży drastycznie zmniejsza ryzyko wad cewy nerwowej (np. rozczepu kręgosłupa)." },
+    { q: "Zespół Downa jest spowodowany obecnością dodatkowego chromosomu w parze:", options: ["13", "18", "21", "23"], answer: 2, exp: "Trisomia 21. chromosomu odpowiada za zespół wad genetycznych znany jako Zespół Downa." },
+    { q: "Czym jest hemofilia?", options: ["Niedokrwistością z braku żelaza", "Genetyczną zaburzeniem krzepnięcia krwi", "Nowotworem układu limfatycznego", "Chorobą autoimmunologiczną stawów"], answer: 1, exp: "Hemofilia to wrodzone skazy krwotoczne wywołane niedoborem czynników krzepnięcia (VIII, IX lub XI)." },
+    { q: "Który enzym trzustkowy odpowiada za trawienie tłuszczów?", options: ["Trypsyna", "Lipaza trzustkowa", "Amylaza", "Nukleaza"], answer: 1, exp: "Lipaza trzustkowa hydrolizuje trójglicerydy do kwasów tłuszczowych i monoglicerydów." },
+    { q: "Główną funkcją pęcherzyków płucnych jest:", options: ["Oczyszczanie powietrza", "Wymiana gazowa (O2 i CO2)", "Ocieplanie wdychanego powietrza", "Produkcja śluzu"], answer: 1, exp: "Pęcherzyki płucne to cieniutkie struktury o ogromnej powierzchni, gdzie zachodzi wymiana gazowa między powietrzem a krwią." },
+    { q: "Jak nazywa się blona otaczająca bezpośrednio płuca?", options: ["Wierzchowatość", "Opłucna", "Osierdzie", "Otrzewna"], answer: 1, exp: "Opłucna jest dwuwarstwową błoną surowiczą wyścielającą klatkę piersiową i otaczającą płuca." },
+    { q: "Co mierzymy badaniem gazometrii krwi tętniczej?", options: ["Poziom hormonów tarczycy", "Ciśnienie parcjalne O2, CO2 oraz pH krwi", "Liczbę płytki krwi", "Czas krzepnięcia PT"], answer: 1, exp: "Gazometria ocenia gospodarkę kwasowo-zasadową i skuteczność wymiany gazowej w płucach (pH, paO2, paCO2, HCO3-)." },
+    { q: "Wskazaniem do podania adrenaliny w dawce 0,5 mg i.m. u dorosłego jest:", options: ["Napad astmy", "Wstrząs anafilaktyczny", "Głęboka hipoglikemia", "Udar mózgu"], answer: 1, exp: "Adrenalina podana domięśniowo jest lekiem pierwszego rzutu w leczeniu ciężkiej reakcji anafilaktycznej." },
+    { q: "W którym odcinku jelita wchłaniana jest większość składników odżywczych?", options: ["Żołądek", "Jelito cienkie", "Jelito grube", "Dwunastnica tylko"], answer: 1, exp: "Jelito cienkie (czcze i kręte) dzięki kosmkom jelitowym odpowiada za wchłanianie większości trawionych pokarmów." },
+    { q: "Anemia z powodu braku witaminy B12 lub czynnika Castle'a to anemia:", options: ["Aplastyczna", "Sierpowata", "Złośliwa (Megaloblastyczna)", "Hemolityczna"], answer: 2, exp: "Niedobór B12/czynnika wewnętrznego Castle'a powoduje zaburzenie syntezy DNA i anemię megaloblastyczną (złośliwą)." },
+    { q: "Największy staw w ciele człowieka pod względem powierzchni stawowej to:", options: ["Staw biodrowy", "Staw kolanowy", "Staw ramienny", "Staw skokowy"], answer: 1, exp: "Staw kolanowy jest największym i najbardziej złożonym stawem w ludzkim ciele." },
+    { q: "Który nerw odpowiada za ruch język?", options: ["X - Błędny", "XII - Podjęzykowy", "IX - Językowo-gardłowy", "V - Trójdzielny"], answer: 1, exp: "Nerw podjęzykowy (XII) jest nerwem ruchowym zaopatrującym mięśnie języka." },
+    { q: "Prawidłowe ciśnienie tętnicze u dorosłego mieści się w granicach:", options: ["100/60 mmHg", "120/80 mmHg", "140/90 mmHg", "150/100 mmHg"], answer: 1, exp: "Wartość <120 mmHg dla ciśnienia skurczowego i <80 mmHg dla rozkurczowego jest uznawana za optymalną." },
+    { q: "Która tkanka organizmu ma najmniejsze zdolności regeneracyjne po zniszczeniu?", options: ["Tkanka kostna", "Tkanka nabłonkowa", "Tkanka nerwowa (ośrodkowa)", "Tkanka łączna"], answer: 2, exp: "Neurons w OUN (mózg i rdzeń) praktycznie nie dzielą się w dorosłym życiu, a ubytki zastępowane są blizną glejową." },
+    { q: "Wskazaniem do użycia pozycji zastanej bocznej ustalonej jest:", options: ["Osoba nieprzytomna, oddychająca prawidłowo", "Osoba bez oddechu", "Osoba z podejrzeniem złamania kręgosłupa", "Osoba w trakcie napadu drgawek"], answer: 0, exp: "Pozycja bezpieczna zapobiega zachłyśnięciu się treścią żołądkową i zapadaniu języka u nieprzytomnego z zachowanym oddechem." },
+    { q: "Który hormon odpowiada za zatrzymanie wody w organizmie przez zagęszczanie moczu?", options: ["Oksytocyna", "Wazopresyna (ADH)", "Kortyzol", "Insulina"], answer: 1, exp: "Hormon antydiuretyczny (ADH/wazopresyna) zwiększa reabsorpcję wody w kanalikach zbiorczych nerek." },
+    { q: "Choroba Gravesa-Basedowa jest przykładem nadczynności:", options: ["Trzustki", "Tarczycy", "Nadnerczy", "Przysadki"], answer: 1, exp: "To autoimmunologiczna choroba polegająca na stymulacji receptorów TSH przez autoprzeciwciała, prowadząca do nadczynności tarczycy." },
+    { q: "Głównym buforem utrzymującym stabilne pH krwi jest system:", options: ["Białczanowy", "Węglanowy (wodorowęglanowy)", "Fosforanowy", "Hemoglobinowy"], answer: 1, exp: "Bufor wodorowęglanowy (HCO3- / H2CO3) stanowi najważniejszy układ utrzymujący pH krwi w granicach 7.35 - 7.45." },
+    { q: "Gdzie dochodzi do dojrzewania limfocytów T?", options: ["W szpiku kostnym", "W grasicy", "W śledzionie", "W węzłach chłonnych"], answer: 1, exp: "Limfocyty T powstają w szpiku, ale dojrzewają i przechodzą selekcję w grasicy ( stąd litera 'T' od Thymus)." },
+    { q: "Objawem wstrząsu hipowolemicznego (np. po krwotoku) NIE jest:", options: ["Tchykardia (szybkie tętno)", "Bladość i zimne poty", "Nadciśnienie tętnicze", "Skąpomocz"], answer: 2, exp: "W spadek objętości krwi krążącej prowadzi do hipotensji (spadku ciśnienia), a nie nadciśnienia." },
+    { q: "Przełyk przechodzi przez przeponę przez:", options: ["Rozwór przełykowy", "Otwór żyły głównej", "Rozwór aortalny", "Szczelinę przykręgową"], answer: 0, exp: "Przepona posiada specyficzny rozwór przełykowy (hiatus esophageus) w części mięśniowej." },
+    { q: "Jaką funkcję pełnią osteoblasty?", options: ["Resorbują kość", "Kościotwórczą (budują kość)", "Produkują krew", "Przewodzą impulsy"], answer: 1, exp: "Osteoblasty to komórki kościotwórcze odpowiedzialne za syntezę macierzy kostnej. Osteoklasty kość niszczą." },
+    { q: "Która struktura ucha odpowiada za zmysł równowagi?", options: ["Ślimak", "Kanały półkoliste", "Błona bębenkowa", "Młoteczek"], answer: 1, exp: "Kanały półkoliste wraz z narządami otolitowymi w uchu wewnętrznym rejestrują ruchy głowy i przyspieszenie." },
+    { q: "Pierwszym odgałęzieniem łuku aorty jest:", options: ["Tętnica szyjna wspólna lewa", "Pień ramienno-głowowy", "Tętnica podobojczykowa lewa", "Tętnica wieńcowa prawa"], answer: 1, exp: "Idąc od serca, z łuku aorty odchodzi najpierw pień ramienno-głowowy, potem tętnica szyjna wspólna lewa i podobojczykowa lewa." },
+    { q: "Który aminokwas jest niezbędny (egzogenny) i musi być dostarczany z pożywieniem?", options: ["Alanina", "Glutamina", "Leucyna", "Glicyna"], answer: 2, exp: "Leucyna należy do aminokwasów egzogennych (Essential Amino Acids), których organizm człowieka nie potrafi sam zsyntetyzować." },
+    { q: "Co jest głównym składnikiem kamieni żółciowych?", options: ["Szczawian wapnia", "Kwas moczowy", "Kolesterol", "Struwit"], answer: 2, exp: "Około 70-80% kamieni żółciowych to kamienie cholesterolowe lub mieszane z przewagą cholesterolu." },
+    { q: "Niedobór której witaminy wywołuje szkorbut?", options: ["Witamina B1", "Witamina C", "Witamina A", "Witamina K"], answer: 1, exp: "Brak kwasu askorbinowego (wit. C) upośledza syntezę kolagenu, co prowadzi do uszkodzenia naczyń, krwawienia dziąseł i szkorbutu." },
+    { q: "Bariera krew-mózg utworzona jest głównie przez komórki śródłonka oraz wypustki:", options: ["Mikrogleju", "Astrocytów", "Oligodendrocytów", "Schwanna"], answer: 1, exp: "Stopy naczyniowe astrocytów ściśle oplatają naczynia włosowate mózgu, współtworząc selektywną barierę krew-mózg." },
+    { q: "Która zastawka serca jest zastawką trójdzielną?", options: ["Prawa zastawka przedsionkowo-komorowa", "Lewa zastawka przedsionkowo-komorowa", "Zastawka aorty", "Zastawka pnia płucnego"], answer: 0, exp: "Zastawka trójdzielna (tricuspid valve) leży między prawym przedsionkiem a prawą komorą." },
+    { q: "Jaki jest główny produkt metabolizmu białek wydalany z moczem?", options: ["Glukoza", "Mocznik", "Bilirubina", "Kreatyna"], answer: 1, exp: "Mocznik powstaje w cyklu mocznikowym w wątrobie jako bezpieczna forma neutralizacji toksycznego amoniaku pochodzącego z białek." },
+    { q: "Zapalenie płuc wywołane przez Mycoplasma pneumoniae leczy się głównie:", options: ["Penicylinami", "Makrolidami / Tetracyklinami", "Lekami przeciwgrzybiczymi", "Wyłącznie objawowo"], answer: 1, exp: "Mycoplasma nie posiada ściany komórkowej, więc penicyliny na nią nie działają. Stosuje się makrolidy lub fluoroquinolony." },
+    { q: "Który płat kory mózgowej odpowiada za przetwarzanie informacji wzrokowych?", options: ["Czołowy", "Ciemieniowy", "Skroniowy", "Potyliczny"], answer: 3, exp: "Pierwotna kora wzrokowa zlokalizowana jest w płacie potylicznym mózgowia." },
+    { q: "Co mierzy test tętna i oksymetrii (pulsoksymetr)?", options: ["Ciśnienie tętnicze", "Nasycenie hemoglobiny tlenem (SpO2)", "Poziom CO2 w wydychanym powietrzu", "Objętość wyrzutową"], answer: 1, exp: "Pulsoksymetr mierzy wysycenie tlenem hemoglobiny w krwi tętniczej metodą spektrofotometryczną." },
+    { q: "Który nerw unerwia ruchowo prostowniki stawu łokciowego i promieniowo-nadgarstkowego?", options: ["Nerw pośrodkowy", "Nerw łokciowy", "Nerw promieniowy", "Nerw pachowy"], answer: 2, exp: "Nerw promieniowy zaopatruje całą grupę tylną ramienia (triceps) i przedramienia (prostowniki)." },
+    { q: "Stan zagrożenia życia w astmie nieodpowiadający na leczenie to:", options: ["Status asthmaticus", "Wstrząs kardiogenny", "Omawa opłucnowa", "Rozzedma"], answer: 0, exp: "Stan astmatyczny (status asthmaticus) to ciężki, długotrwały napad duszności nieustępujący po standardowych lekach." },
+    { q: "Enzymem aktywującym peptydy w żołądku jest:", options: ["Pepsynogen", "Pepsyna", "Trypsyna", "Gastryna"], answer: 1, exp: "Pepsyna (powstająca z nieaktywnego pepsynogenu pod wpływem kwasu HCl) rozkłada białka na mniejsze polipeptydy." },
+    { q: "Lekiem z wyboru w przypadku spowolnienia akcji serca (bradykardii) z objawami wstrząsu jest:", options: ["Beta-bloker", "Atropina", "Adenozyna", "Amiodaron"], answer: 1, exp: "Atropina blokuje receptory muskarynowe układu przywspółczulnego, zwiększając częstotliwość rytmu serca." },
+    { q: "Ile wynosi prawidłowa objętość oddechowa (TV) u zdrowego dorosłego?", options: ["ok. 150 ml", "ok. 500 ml", "ok. 1500 ml", "ok. 3000 ml"], answer: 1, exp: "Objętość oddechowa (spokojny wdech i wydech) wynosi średnio około 500 ml." },
+    { q: "Gdzie zachodzi synteza witaminy D3 w organizmie?", options: ["W jelicie", "W skórze (pod wpływem promieni UV)", "W wątrobie", "W nerkach"], answer: 1, exp: "Synteza cholekalcyferolu z 7-dehydrocholestolu odbywa się w naskórku pod wpływem promieniowania UVB." },
+    { q: "W grupie układów grup krwi ABO, grupa AB posiada:", options: ["Przeciwciała anty-A i anty-B", "Antygeny A i B na krwinkach", "Brak antygenów", "Przeciwciała anty-0"], answer: 1, exp: "Osoby z grupą AB mają na powierzchni erytrocytów zarówno antygen A, jak i B, oraz brak przeciwciał w osoczu." },
+    { q: "Obecność moczu w krwi w badaniu laboratoryjnym to:", options: ["Białkomocz", "Cukromocz", "Krwiomocz (Haematuria)", "Bakteriomocz"], answer: 2, exp: "Hematuria oznacza obecność krwinek czerwonych w moczu ponad normę." },
+    { q: "Najczęstsze złamanie kości u osób starszych z osteoporozą dotyczy:", options: ["Kości promieniowej", "Szyjki kości udowej", "Żeber", "Kości ramiennej"], answer: 1, exp: "Złamania szyjki (lub okolicy krętarzowej) kości udowej są powszechną i groźną konsekwencją osteoporozy u seniorek i seniorów." },
+    { q: "Tętnica szyjna wspólna dzieli się na szyjną wewnętrzną i zewnętrzną na wysokości kręgu:", options: ["C1-C2", "C3-C4", "C6-C7", "T1-T2"], answer: 1, exp: "Podział tętnicy szyjnej wspólnej następuje zazwyczaj na poziomie górnego brzegu chrząstki tarczowatej (kręgi C3-C4)." },
+    { q: "Pierwsza faza krzepnięcia krwi (naczyniowo-płytkowa) prowadzi do powstania:", options: ["Skrzepu włóknikowego", "Czopu płytkowego", "Protrombiny", "Plasminy"], answer: 1, exp: "Hemostaza pierwotna polega na skurczu naczynia i utworzeniu nietrwałego czopu płytkowego przez aktywowane trombocyty." },
+    { q: "Objawem hipoglikemii NIE jest:", options: ["Uczucie głodu i drżenie rąk", "Zimne poty i tachykardia", "Wzmożone pragnienie i wielomocz", "Zaburzenia koncentracji"], answer: 2, exp: "Wzmożone pragnienie i częste oddawanie moczu są osmotycznymi objawami hiperglikemii (wysokiego poziomu cukru)." },
+    { q: "Wstępne trawienie tłuszczu zaczyna się przy udziale lipazy językowej oraz lipazy:", options: ["Jelitowej", "Żołądkowej", "Trzustkowej", "Wątrobowej"], answer: 1, exp: "Lipaza żołądkowa (w kwaśnym środowisku) rozpoczyna wstępną emulgację i trawienie tłuszczów zemulgowanych (np. mleko, żółtko)." },
+    { q: "Insulina transportuje glukozę do wnętrza komórek głównie poprzez nośnik:", options: ["GLUT1", "GLUT2", "GLUT4", "SGLT1"], answer: 2, exp: "GLUT4 jest wrażliwym na insulinę transporterem glukozy obecnym w mięśniach szkieletowych i tkance tłuszczowej." },
+    { q: "Tkanka tłuszczowa brunatna u niemowląt odpowiada za:", options: ["Magazynowanie energii", "Termogenezę bezdrżeniową", "Produkcję leukocytów", "Ochronę mechaniczną nerek"], answer: 1, exp: "Brunatny tłuszcz zawiera liczne mitochondria z białkiem UCP-1 (termogenina), co pozwala na generowanie ciepła bez drżenia mięśni." },
+    { q: "Uszkodzenie ośrodka Broca w płacie czołowym skutkuje:", options: ["Afazją czuciową (brak rozumienia)", "Afazją ruchową (trudność w mówieniu)", "Ślepotą korową", "Głuchotą"], answer: 1, exp: "Ośrodek Broca odpowiada za generowanie mowy. Jego uszkodzenie daje afazję ruchową – pacjent rozumie, ale ma trudność z mówieniem." },
+    { q: "Jakie ciśnienie wywołuje przepływ filtracyjny w kłębuszku nerkowym?", options: ["Ciśnienie hydrostatyczne krwi", "Ciśnienie onkotyczne osocza", "Ciśnienie tkankowe", "Moczowe"], answer: 0, exp: "Filteracja kłębuszkowa zachodzi dzięki wysokiemu ciśnieniu hydrostatycznemu krwi w naczyniach włosowatych kłębuszka." },
+    { q: "Pierwszą pomocą przy poparzeniu chemicznym skóry jest:", options: ["Zastosowanie maści", "Obfite płukanie czystą wodą przez kilkanaście minut", "Zneutralizowanie inną chemią", "Założenie ciasnego opatrunku"], answer: 1, exp: "Podstawą jest natychmiastowe zmycie substancji żrącej dużą ilością bieżącej, chłodnej wody." },
+    { q: "Ślepa plamka na siatkówce oka to miejsce:", options: ["O największym zagęszczeniu czopków", "Gdzie wybiega nerw wzrokowy (tarcza nerwu)", "O największej ostrości widzenia", "Gdzie wpada światło"], answer: 1, exp: "Tarcza nerwu wzrokowego nie zawiera fotoreceptorów (ani czopków, ani pręcików), stąd nazywana jest ślepą plamką." },
+    { q: "Synteza hormonów tarczycy (T3 i T4) wymaga obecności jakiego pierwiastka?", options: ["Żelaza", "Jodu", "Cynku", "Miedzi"], answer: 1, exp: "Jod jest niezbędnym składnikiem cząsteczek trijodotyroniny (T3) i tyroksyny (T4)." },
+    { q: "Dla jakiej choroby charakterystyczna jest sztywność karku i objaw Brudzińskiego?", options: ["Zapalenie płuc", "Zapalenie opon mózgowo-rdzeniowych", "Zawał serca", "Choroba Parkinsona"], answer: 1, exp: "Objawy oponowe (sztywność karku, objaw Brudzińskiego, objaw Kerniga) wskazują na podrażnienie opon mózgowo-rdzeniowych." },
+    { q: "Receptory bólowe to inaczej:", options: ["Proprioceptory", "Nocyceptory", "Termoreceptory", "Baroreceptory"], answer: 1, exp: "Nocyceptory to wolne zakończenia nerwowe reagujące na bodźce uszkadzające tkanki (bólowe)." },
+    { q: "Średnia objętość krwi u dorosłego człowieka wynosi około:", options: ["2-3 litry", "5-6 litrów", "8-10 litrów", "12 litrów"], answer: 1, exp: "Całkowita objętość krwi dorosłego człowieka stanowi ok. 7-8% masy ciała, co daje średnio 5-6 litrów." }
+];
+
+let currentIndex = 0;
+let score = 0;
+let answered = false;
+
+function loadQuestion() {
+    answered = false;
+    const q = questions[currentIndex];
+    
+    document.getElementById("progress").style.width = `${((currentIndex) / questions.length) * 100}%`;
+    document.getElementById("current-question-num").textContent = currentIndex + 1;
+    document.getElementById("question-text").textContent = q.q;
+    
+    const container = document.getElementById("options-container");
+    container.innerHTML = "";
+    
+    document.getElementById("explanation-box").style.display = "none";
+    document.getElementById("next-btn").style.display = "none";
+
+    q.options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.innerHTML = `<strong>${String.fromCharCode(65 + idx)}.</strong> ${opt}`;
+        btn.onclick = () => checkAnswer(idx, btn);
+        container.appendChild(btn);
+    });
+}
+
+function checkAnswer(selectedIndex, selectedBtn) {
+    if (answered) return;
+    answered = true;
+    
+    const q = questions[currentIndex];
+    const buttons = document.querySelectorAll(".option-btn");
+
+    buttons.forEach(btn => btn.disabled = true);
+
+    if (selectedIndex === q.answer) {
+        selectedBtn.classList.add("correct");
+        score++;
+        document.getElementById("current-score").textContent = score;
+        document.getElementById("explanation-title").textContent = "✓ Prawidłowa odpowiedź!";
+        document.getElementById("explanation-title").style.color = "#15803d";
+    } else {
+        selectedBtn.classList.add("incorrect");
+        buttons[q.answer].classList.add("correct");
+        document.getElementById("explanation-title").textContent = "✕ Błędna odpowiedź!";
+        document.getElementById("explanation-title").style.color = "#b91c1c";
+    }
+
+    document.getElementById("explanation-text").textContent = q.exp;
+    document.getElementById("explanation-box").style.display = "block";
+    
+    if (currentIndex < questions.length - 1) {
+        document.getElementById("next-btn").textContent = "Następne pytanie";
+    } else {
+        document.getElementById("next-btn").textContent = "Zobacz wynik końcowy";
+    }
+    document.getElementById("next-btn").style.display = "block";
+}
+
+function nextQuestion() {
+    currentIndex++;
+    if (currentIndex < questions.length) {
+        loadQuestion();
+    } else {
+        showResults();
+    }
+}
+
+function showResults() {
+    document.getElementById("quiz-screen").style.display = "none";
+    document.getElementById("results-screen").style.display = "block";
+    
+    const percent = Math.round((score / questions.length) * 100);
+    document.getElementById("final-score").textContent = `${score}/${questions.length}`;
+    
+    let feedback = "";
+    if (percent >= 90) feedback = "Znakomity wynik! Masz wiedzę na poziomie eksperckim.";
+    else if (percent >= 70) feedback = "Bardzo dobry wynik! Posiadasz solidne podstawy medyczne.";
+    else if (percent >= 50) feedback = "Całkiem nieźle, ale warto powtórzyć niektóre zagadnienia.";
+    else feedback = "Test okazał się trudny. Warto przejrzeć materiał i spróbować ponownie!";
+    
+    document.getElementById("feedback-text").textContent = feedback;
+}
+
+function restartQuiz() {
+    currentIndex = 0;
+    score = 0;
+    document.getElementById("current-score").textContent = score;
+    document.getElementById("results-screen").style.display = "none";
+    document.getElementById("quiz-screen").style.display = "block";
+    loadQuestion();
+}
+
+// Uruchomienie testu przy starcie
+loadQuestion();
+</script>
+</body>
+</html>
