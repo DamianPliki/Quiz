@@ -3,338 +3,409 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wielki Quiz Friends</title>
+    <title>Quiz Friends</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        body {
-            background-color: #fdf2f8;
-            color: #1f2937;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .quiz-card {
-            background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
-            width: 100%;
-            max-width: 600px;
-            padding: 24px;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-        }
-        .badge {
-            background-color: #e0f2fe;
-            color: #0369a1;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-        .score-badge {
-            background-color: #fef3c7;
-            color: #b45309;
-        }
-        .progress-bar-bg {
-            background-color: #e5e7eb;
-            height: 8px;
-            border-radius: 4px;
-            margin-bottom: 24px;
-            overflow: hidden;
-        }
-        .progress-bar-fill {
-            background-color: #6366f1;
-            height: 100%;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-        .question-text {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            line-height: 1.4;
-        }
-        .options-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .option-btn {
-            background: #f9fafb;
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            padding: 12px 16px;
-            text-align: left;
-            font-size: 15px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            outline: none;
-        }
-        .option-btn:hover:not(:disabled) {
-            border-color: #6366f1;
-            background: #f4f4ff;
-        }
-        .option-btn.correct {
-            background-color: #dcfce7 !important;
-            border-color: #22c55e !important;
-            color: #15803d;
-            font-weight: 600;
-        }
-        .option-btn.incorrect {
-            background-color: #fee2e2 !important;
-            border-color: #ef4444 !important;
-            color: #b91c1c;
-        }
-        .explanation {
-            background-color: #f3f4f6;
-            border-left: 4px solid #6366f1;
-            padding: 12px;
-            border-radius: 0 8px 8px 0;
-            margin-bottom: 20px;
-            font-size: 14px;
-            display: none;
-        }
-        .next-btn {
-            background-color: #6366f1;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            padding: 12px 24px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            width: 100%;
-            display: none;
-            transition: background-color 0.2s;
-        }
-        .next-btn:hover {
-            background-color: #4f46e5;
-        }
-        .results-container {
-            text-align: center;
-            display: none;
-        }
-        .iq-score {
-            font-size: 48px;
-            font-weight: 800;
-            color: #6366f1;
-            margin: 16px 0 8px 0;
-        }
-        .iq-title {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 12px;
-        }
-        .feedback {
-            color: #4b5563;
-            margin-bottom: 24px;
-            line-height: 1.5;
-        }
+        body { font-family: Arial, sans-serif; background: #f4f4f9; padding: 20px; max-width: 650px; margin: 0 auto; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .q-box { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+        .q-title { font-weight: bold; margin-bottom: 10px; font-size: 16px; }
+        .btn { display: block; width: 100%; text-align: left; padding: 10px; margin: 5px 0; border: 1px solid #ccc; background: #fff; border-radius: 6px; cursor: pointer; }
+        .btn:hover { background: #eef; }
+        .exp { display: none; margin-top: 8px; padding: 8px; border-radius: 6px; font-size: 14px; }
+        .correct-bg { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .wrong-bg { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .result-box { text-align: center; font-size: 20px; font-weight: bold; margin-top: 20px; padding: 15px; background: #e2e3e5; border-radius: 8px; }
     </style>
 </head>
 <body>
 
-<div class="quiz-card">
-    <div id="quiz-screen">
-        <div class="header">
-            <span class="badge">Pytanie <span id="current-question-num">1</span> z <span id="total-questions">50</span></span>
-            <span class="badge score-badge">Punkty: <span id="current-score">0</span></span>
-        </div>
-        
-        <div class="progress-bar-bg">
-            <div class="progress-bar-fill" id="progress"></div>
-        </div>
+<div class="card">
+    <h2>Wielki Quiz: Przyjaciele (50 Pytań)</h2>
+    <p>Wybierz odpowiedzi, a na dole zobaczysz swój wynik!</p>
+    <hr style="margin: 15px 0;"><br>
 
-        <div class="question-text" id="question-text">Pytanie ładowanie...</div>
-
-        <div class="options-grid" id="options-container"></div>
-
-        <div class="explanation" id="explanation-box">
-            <strong id="explanation-title"></strong>
-            <p id="explanation-text"></p>
-        </div>
-
-        <button class="next-btn" id="next-btn" onclick="nextQuestion()">Następne pytanie</button>
+    <!-- Pytanie 1 -->
+    <div class="q-box">
+        <div class="q-title">1. Jak ma na imię mała małpka Rossa?</div>
+        <button class="btn" onclick="ans(1, true, this)">A) Marcel</button>
+        <button class="btn" onclick="ans(1, false, this)">B) Barnaby</button>
+        <button class="btn" onclick="ans(1, false, this)">C) George</button>
+        <div id="exp-1" class="exp"></div>
     </div>
 
-    <div class="results-container" id="results-screen">
-        <h2>Wynik Quizu Friends</h2>
-        <div class="iq-score" id="iq-value">IQ ---</div>
-        <div class="iq-title" id="iq-title">---</div>
-        <p class="feedback" id="feedback-text">---</p>
-        <button class="next-btn" style="display:block;" onclick="restartQuiz()">Zagraj ponownie</button>
+    <!-- Pytanie 2 -->
+    <div class="q-box">
+        <div class="q-title">2. Jakiej kultowej piosenki uczyła Phoebe grać na gitarze?</div>
+        <button class="btn" onclick="ans(2, true, this)">A) Smelly Cat</button>
+        <button class="btn" onclick="ans(2, false, this)">B) Sticky Shoes</button>
+        <button class="btn" onclick="ans(2, false, this)">C) Angel of the Morning</button>
+        <div id="exp-2" class="exp"></div>
     </div>
-</div>
 
-<script>
-const questions = [
-    { q: "Jak ma na imię mała małpka, którą opiekował się Ross?", options: ["Marcel", "Barnaby", "George"], answer: 0, exp: "Marcel był kapucynką Rossa w 1. sezonie serialu." },
-    { q: "Jakiej kultowej piosenki uczyła Phoebe grać na gitarze?", options: ["Smelly Cat", "Sticky Shoes", "Angel of the Morning"], answer: 0, exp: "'Smelly Cat' (Cuchnący Kot) to najbardziej znany utwór Phoebe Buffay." },
-    { q: "Jak nazywała się kawiarnia, w której spotykali się przyjaciele?", options: ["Central Park Cafe", "Central Perk", "Coffee Perk"], answer: 1, exp: "Kawiarnia nazywa się Central Perk – gra słów nawiązująca do Central Parku." },
-    { q: "Czym z zawodu zajmuje się Chandler Bing przez większość pierwszych sezonów?", options: ["Analizą i rekonfiguracją danych", "Aktorstwem", "Księgowością bankową"], answer: 0, exp: "Chandler zajmował się przetwarzaniem danych ('Statistical analysis and data reconfiguration')." },
-    { q: "Jakie imię nosiła lalka używana przez Joeya do spania?", options: ["Hugsy", "Barnaby", "Teddy"], answer: 0, exp: "Hugsy to ukochany pluszowy pingwin Joeya." },
-    { q: "Ile razy Ross Geller brał ślub w trakcie trwania serialu?", options: ["2 razy", "3 razy", "4 razy"], answer: 1, exp: "Ross brał ślub 3 razy: z Carol, Emily oraz z Rachel w Las Vegas." },
-    { q: "Jakie było drugie imię Chandlera?", options: ["Francis", "Muriel", "Eustachy"], answer: 1, exp: "Drugie imię Chandlera to Muriel." },
-    { q: "Kim z zawodu jest Ross Geller?", options: ["Geologiem", "Paleontologiem", "Biologiem molekularnym"], answer: 1, exp: "Ross jest doktorem paleontologii." },
-    { q: "Jakie nazwisko panieńskie miała Monica?", options: ["Buffay", "Green", "Geller"], answer: 2, exp: "Monica i Ross to rodzeństwo, oboje noszą nazwisko Geller." },
-    { q: "Z kogo była zrobiona słynna kanapka Rossa, którą ktoś zjadł w pracy?", options: ["Z pieczonego indyka z 'Moist Makerem'", "Z szynki i sera", "Z klopsików"], answer: 0, exp: "Była to kanapka z indyka z dodatkową kromką chleba namoczoną w sosie w środku." },
-    { q: "Jak nazywa się bliźniacza siostra Phoebe?", options: ["Ursula", "Pamela", "Fiona"], answer: 0, exp: "Siostra bliźniaczka Phoebe to Ursula." },
-    { q: "Który z bohaterów wypowiada słynne zdanie 'How you doin'?'", options: ["Chandler", "Joey", "Ross"], answer: 1, exp: "To kultowy tekst Joeya Tribbiani używany na podryw." },
-    { q: "W jakim mieście odbywa się ślub Rossa i Emily?", options: ["W Nowym Jorku", "W Londynie", "W Paryżu"], answer: 1, exp: "Ślub Rossa i Emily odbył się w ruinach budynku w Londynie." },
-    { q: "Czym zajmowała się Rachel Green na samym początku serialu (Sezon 1)?", options: ["Była kelnerką w Central Perk", "Pracowała w Bloomingdale's", "Pracowała u Ralpha Laurena"], answer: 0, exp: "Po ucieczce z własnego ślubu Rachel zaczęła pracować jako kelnerka." },
-    { q: "Jakie imię nosi brat Phoebe?", options: ["Frank Jr.", "Charles", "David"], answer: 0, exp: "Brat Phoebe to Frank Buffay Jr." },
-    { q: "Kto był miłością życia Phoebe z okresu przed Mikiem, który wyjechał do Mińska?", options: ["David naukowiec", "Gary policjant", "Duncan łyżwiarz"], answer: 0, exp: "David (naukowiec) wyjechał na badania do Mińska." },
-    { q: "W jaki sposób Chandler i Monica zaczęli swój romans?", options: ["Na imprezie w Nowym Jorku", "Podczas wyjazdu na ślub Rossa w Londynie", "W wycieczce do Las Vegas"], answer: 1, exp: "Zbliżyli się do siebie w Londynie przed ślubem Rossa." },
-    { q: "Jak ma na imię pies z gipsu, którego Joey kupił do nowego mieszkania?", options: ["Pat the Dog", "Barky", "Whitey"], answer: 0, exp: "Wielki biały pies z gipsu nazywał się Pat the Dog." },
-    { q: "Kto grał rolę dr. Drake'a Ramoray w serialu 'Dni naszego życia'?", options: ["Joey Tribbiani", "Chandler Bing", "Ross Geller"], answer: 0, exp: "Joey grał neurochirurga Drake'a Ramoraya." },
-    { q: "Co Rachel przez pomyłkę dodała do tradycyjnego angielskiego deseru (Trifle)?", options: ["Książkę telefoniczną", "Mięso wołowe z cebulą i groszkiem", "Sos majonezowy"], answer: 1, exp: "Rachel skleiła dwie strony przepisu i połączyła deser z zapiekanką pasterską." },
-    { q: "Jak nazywała się pierwsza żona Rossa, która okazała się lesbijką?", options: ["Carol", "Susan", "Emily"], answer: 0, exp: "Carol Willick była pierwszą żoną Rossa i matką jego syna Bena." },
-    { q: "Jak nazywa się syn Rossa i Carol?", options: ["Ben", "Jack", "Emma"], answer: 0, exp: "Syn Rossa i Carol dostał na imię Ben." },
-    { q: "Który z bohaterów ma na ciele trzecią brodawkę (sutek)?", options: ["Joey", "Chandler", "Ross"], answer: 1, exp: "Chandler miał trzeci sutek ('nubbin'), który później usunął." },
-    { q: "Czym groził Ross krzycząc słynne 'PIVOT!'?", options: ["Przenoszeniem kanapy po schodach", "Kładzeniem dywanu", "Pakowaniem walizki"], answer: 0, exp: "Krzyczał 'PIVOT!' podczas próby wniesienia nowej kanapy po klatce schodowej." },
-    { q: "Jak nazywała się postać grana przez Brada Pitta w odcinku dziękczynnym?", options: ["Will Colbert", "Tommy", "Roy"], answer: 0, exp: "Brad Pitt zagrał Willa Colberta, założyciela klubu 'Nienawidzę Rachel Green'." },
-    { q: "Jakie zwierzaki mieszkały w mieszkaniu Joeya i Chandlera?", options: ["Pies i kot", "Kurczak i Kaczka", "Papuga i chomik"], answer: 1, exp: "Mieli Kurczaka i Kaczkę (Chick and Duck)." },
-    { q: "Do jakiego kraju przeniósł się Chandler w ramach ucieczki przed Janice?", options: ["Do Francji", "Wyspy Owcze", "Jemen"], answer: 2, exp: "Chandler skłamał Janice, że przenosi się pod adres '15 Yemen Road, Yemen'." },
-    { q: "Jakie imię nosi córka Rachel i Rossa?", options: ["Emma", "Ella", "Erica"], answer: 0, exp: "Ich córka otrzymała imię Emma." },
-    { q: "Za kogo przebrał się Ross na Święta, by opowiedzieć Benowi o Hanuce?", options: ["Świątecznego Pancernika", "Świętego Mikołaja", "Renifera"], answer: 0, exp: "Ross przebrał się za Świątecznego Pancernika (Holiday Armadillo)." },
-    { q: "Jak ma na imię ojciec Moniki i Rossa?", options: ["Jack", "Richard", "Charles"], answer: 0, exp: "Ojcem Moniki i Rossa był Jack Geller." },
-    { q: "Kto udzielił ślubu Phoebe i Mike'owi podczas śnieżycy na ulicy?", options: ["Joey", "Ross", "Chandler"], answer: 0, exp: "Joey udzielił im ślubu jako wyświęcony minister internetowy." },
-    { q: "Jakie słynne zdanie powtarzał Ross w kwestii rozstania z Rachel?", options: ["We were on a break!", "I loved her!", "She left me!"], answer: 0, exp: "'We were on a break!' (Mieliśmy przerwę!) to flagowy tekst Rossa." },
-    { q: "Jak nazywa się gra planszowa stworzona przez Chandlera, by dać Joeyowi pieniądze?", options: ["Cups", "Bamboozled", "Firehouse"], answer: 0, exp: "Chandler wymyślił bezsensowną grę w 'Kubki' (Cups), by przegrać z Joeyem." },
-    { q: "Kim z zawodu był dr Richard Burke – starszy partner Moniki?", options: ["Okulistą", "Chirurgiem", "Dentystą"], answer: 0, exp: "Richard był cenionym okulistą i przyjacielem jej ojca." },
-    { q: "Jakie imię nosił kot bez sierści (Sphynx) kupiony przez Rachel?", options: ["Mrs. Whiskerson", "Fluffy", "Baldy"], answer: 0, exp: "Rachel kupiła drogiego kota Mrs. Whiskerson." },
-    { q: "Na jakim instrumencie próbował grać Ross na ślub Moniki i Chandlera?", options: ["Na dudach", "Na skrzypcach", "Na puzonie"], answer: 0, exp: "Ross uczył się grać na dudach, by niespodziewanie zagrać na uroczystości." },
-    { q: "Kto z przyjacielskiego grona jako pierwszy dowiedział się o romansie Moniki i Chandlera?", options: ["Joey", "Phoebe", "Rachel"], answer: 0, exp: "Joey odkrył to jako pierwszy w odcinku z brudną bielizną." },
-    { q: "Jak zareagowała Phoebe, gdy zobaczyła Monikę i Chandlera przez okno?", options: ["Krzyczała: 'My eyes! My eyes!'", "Zaczęła płakać", "Zadzwoniła na policję"], answer: 0, exp: "Kultowy cytat Phoebe: 'CHANDLER AND MONICA! MY EYES! MY EYES!'." },
-    { q: "Z czym Chandler i Joey jedli sernik skradziony sąsiadce wprost z podłogi na korytarzu?", options: ["Widelcem wyciągniętym z kieszeni", "Łyżką", "Gołymi rękami"], answer: 0, exp: "Joey dołączył do nich, wyciągając własny widelec z marynarki." },
-    { q: "Gdzie odbył się szalony ślub Rossa i Rachel pod wpływem alkoholu?", options: ["W kaplicy w Las Vegas", "W Atlantic City", "W Nowym Jorku"], answer: 0, exp: "Pobrali się po pijanemu w kaplicy w Las Vegas z dorysowanymi wąsami." },
-    { q: "Czym zajmował się mąż Phoebe, Mike Hannigan, zanim został pianistą?", options: ["Był prawnikiem", "Był lekarzem", "Był aktorem"], answer: 0, exp: "Mike zrezygnował z kariery prawniczej na rzecz pasji do muzyki." },
-    { q: "Jaki przedmiot wisiał na fioletowych drzwiach mieszkania Moniki wokół wizjera?", options: ["Żółta drewniana ramka", "Zegar", "Lusterko"], answer: 0, exp: "Słynna żółta ramka na wizjer." },
-    { q: "Jak nazywał się nagi sąsiad obserwowany z okna mieszkania Moniki?", options: ["Ugly Naked Guy", "Fat Bob", "Old Man Shaver"], answer: 0, exp: "Postać znana w polskiej wersji jako Obrzydliwy Nagi Facet." },
-    { q: "Jakie słynne słowo/zwrot wykrzykiwała Janice przy każdym wejściu?", options: ["OH... MY... GOD!", "Hello Boys!", "Hi Chandler!"], answer: 0, exp: "Janice zawsze witała ich kultowym 'OH... MY... GOD!'." },
-    { q: "Jakie imię nosiła szalona współlokatorka Chandlera, gdy Joey na chwilę się wyprowadził?", options: ["Eddie", "Kip", "Mark"], answer: 0, exp: "Eddie Menuek był nieprzewidywalnym współlokatorem Chandlera." },
-    { q: "Jak nazywa się alter ego / fałszywe nazwisko używane często przez Phoebe?", options: ["Regina Phalange", "Princess Consuela", "Banana Hammock"], answer: 0, exp: "Phoebe używała tożsamości Regina Phalange." },
-    { q: "Jak na imię miał barista z Central Perk, który potajemnie kochał się w Rachel?", options: ["Gunther", "Terry", "Paul"], answer: 0, exp: "Gunther przez wszystkie sezony cicho kochał Rachel." },
-    { q: "Ile dzieci łącznie pojawiło się w życiu głównych bohaterów na przestrzeni całego serialu?", options: ["7 (Ben, Emma, Trojaczki Phoebe, Bliźnięta Moniki/Chandlera)", "4", "5"], answer: 0, exp: "Ben, Emma, trojaczki (dla brata Phoebe) i bliźnięta adopcyjne Moniki i Chandlera." },
-    { q: "Jaka jest ostatnia linijka tekstu wypowiedziana w finale serialu?", options: ["'Sure. Where?' (Chandler)", "'I got off the plane' (Rachel)", "'Goodbye' (Monica)"], answer: 0, exp: "Gdy idą na ostatnią kawę, Chandler pyta żartobliwie: 'Jasne. Ale gdzie?'." },
-    { q: "Co bohaterowie zostawili na kuchennym blacie w ostatniej scenie serialu?", options: ["Wszystkie klucze do mieszkania", "Filiżanki z kawiarni", "Zdjęcia"], answer: 0, exp: "Każdy z 6 bohaterów odłożył swój komplet kluczy do mieszkania." }
-];
+    <!-- Pytanie 3 -->
+    <div class="q-box">
+        <div class="q-title">3. Jak nazywała się kawiarnia, w której spotykali się przyjaciele?</div>
+        <button class="btn" onclick="ans(3, false, this)">A) Central Park Cafe</button>
+        <button class="btn" onclick="ans(3, true, this)">B) Central Perk</button>
+        <button class="btn" onclick="ans(3, false, this)">C) Coffee Perk</button>
+        <div id="exp-3" class="exp"></div>
+    </div>
 
-let currentIndex = 0;
-let score = 0;
-let answered = false;
+    <!-- Pytanie 4 -->
+    <div class="q-box">
+        <div class="q-title">4. Czym zajmował się Chandler przez pierwsze sezony?</div>
+        <button class="btn" onclick="ans(4, true, this)">A) Analizą i rekonfiguracją danych</button>
+        <button class="btn" onclick="ans(4, false, this)">B) Aktorstwem</button>
+        <button class="btn" onclick="ans(4, false, this)">C) Księgowością</button>
+        <div id="exp-4" class="exp"></div>
+    </div>
 
-function loadQuestion() {
-    answered = false;
-    const q = questions[currentIndex];
-    
-    document.getElementById("total-questions").textContent = questions.length;
-    document.getElementById("current-question-num").textContent = currentIndex + 1;
-    document.getElementById("progress").style.width = `${((currentIndex) / questions.length) * 100}%`;
-    document.getElementById("question-text").textContent = q.q;
-    
-    const container = document.getElementById("options-container");
-    container.innerHTML = "";
-    
-    document.getElementById("explanation-box").style.display = "none";
-    document.getElementById("next-btn").style.display = "none";
+    <!-- Pytanie 5 -->
+    <div class="q-box">
+        <div class="q-title">5. Jak nazywał się pluszowy pingwin Joeya?</div>
+        <button class="btn" onclick="ans(5, true, this)">A) Hugsy</button>
+        <button class="btn" onclick="ans(5, false, this)">B) Barnaby</button>
+        <button class="btn" onclick="ans(5, false, this)">C) Teddy</button>
+        <div id="exp-5" class="exp"></div>
+    </div>
 
-    q.options.forEach((opt, idx) => {
-        const btn = document.createElement("button");
-        btn.className = "option-btn";
-        btn.innerHTML = `<strong>${String.fromCharCode(65 + idx)}.</strong> ${opt}`;
-        btn.onclick = () => checkAnswer(idx, btn);
-        container.appendChild(btn);
-    });
-}
+    <!-- Pytanie 6 -->
+    <div class="q-box">
+        <div class="q-title">6. Ile razy Ross brał ślub w trakcie serialu?</div>
+        <button class="btn" onclick="ans(6, false, this)">A) 2 razy</button>
+        <button class="btn" onclick="ans(6, true, this)">B) 3 razy</button>
+        <button class="btn" onclick="ans(6, false, this)">C) 4 razy</button>
+        <div id="exp-6" class="exp"></div>
+    </div>
 
-function checkAnswer(selectedIndex, selectedBtn) {
-    if (answered) return;
-    answered = true;
-    
-    const q = questions[currentIndex];
-    const buttons = document.querySelectorAll(".option-btn");
+    <!-- Pytanie 7 -->
+    <div class="q-box">
+        <div class="q-title">7. Jakie było drugie imię Chandlera?</div>
+        <button class="btn" onclick="ans(7, false, this)">A) Francis</button>
+        <button class="btn" onclick="ans(7, true, this)">B) Muriel</button>
+        <button class="btn" onclick="ans(7, false, this)">C) Eustachy</button>
+        <div id="exp-7" class="exp"></div>
+    </div>
 
-    buttons.forEach(btn => btn.disabled = true);
+    <!-- Pytanie 8 -->
+    <div class="q-box">
+        <div class="q-title">8. Kim z zawodu jest Ross Geller?</div>
+        <button class="btn" onclick="ans(8, false, this)">A) Geologiem</button>
+        <button class="btn" onclick="ans(8, true, this)">B) Paleontologiem</button>
+        <button class="btn" onclick="ans(8, false, this)">C) Biologiem</button>
+        <div id="exp-8" class="exp"></div>
+    </div>
 
-    if (selectedIndex === q.answer) {
-        selectedBtn.classList.add("correct");
-        score++;
-        document.getElementById("current-score").textContent = score;
-        document.getElementById("explanation-title").textContent = "✓ Świetnie! (+1 pkt)";
-        document.getElementById("explanation-title").style.color = "#15803d";
-    } else {
-        selectedBtn.classList.add("incorrect");
-        buttons[q.answer].classList.add("correct");
-        document.getElementById("explanation-title").textContent = "✕ Niestety błąd!";
-        document.getElementById("explanation-title").style.color = "#b91c1c";
-    }
+    <!-- Pytanie 9 -->
+    <div class="q-box">
+        <div class="q-title">9. Jakie nazwisko panieńskie miała Monica?</div>
+        <button class="btn" onclick="ans(9, false, this)">A) Buffay</button>
+        <button class="btn" onclick="ans(9, false, this)">B) Green</button>
+        <button class="btn" onclick="ans(9, true, this)">C) Geller</button>
+        <div id="exp-9" class="exp"></div>
+    </div>
 
-    document.getElementById("explanation-text").textContent = q.exp;
-    document.getElementById("explanation-box").style.display = "block";
-    
-    if (currentIndex < questions.length - 1) {
-        document.getElementById("next-btn").textContent = "Następne pytanie";
-    } else {
-        document.getElementById("next-btn").textContent = "Podsumuj wynik i oblicz IQ";
-    }
-    document.getElementById("next-btn").style.display = "block";
-}
+    <!-- Pytanie 10 -->
+    <div class="q-box">
+        <div class="q-title">10. Co było kluczowym elementem ulubionej kanapki Rossa?</div>
+        <button class="btn" onclick="ans(10, true, this)">A) Kromka nasączona sosikiem (Moist Maker)</button>
+        <button class="btn" onclick="ans(10, false, this)">B) Dodatkowy ser</button>
+        <button class="btn" onclick="ans(10, false, this)">C) Ostry sos chilli</button>
+        <div id="exp-10" class="exp"></div>
+    </div>
 
-function nextQuestion() {
-    currentIndex++;
-    if (currentIndex < questions.length) {
-        loadQuestion();
-    } else {
-        showResults();
-    }
-}
+    <!-- Pytanie 11 -->
+    <div class="q-box">
+        <div class="q-title">11. Jak ma na imię siostra bliźniaczka Phoebe?</div>
+        <button class="btn" onclick="ans(11, true, this)">A) Ursula</button>
+        <button class="btn" onclick="ans(11, false, this)">B) Pamela</button>
+        <button class="btn" onclick="ans(11, false, this)">C) Fiona</button>
+        <div id="exp-11" class="exp"></div>
+    </div>
 
-function showResults() {
-    document.getElementById("quiz-screen").style.display = "none";
-    document.getElementById("results-screen").style.display = "block";
-    
-    const percent = (score / questions.length) * 100;
-    let iqScore = "";
-    let iqTitle = "";
-    let feedback = "";
+    <!-- Pytanie 12 -->
+    <div class="q-box">
+        <div class="q-title">12. Kto mówił kultowe "How you doin'?"</div>
+        <button class="btn" onclick="ans(12, false, this)">A) Chandler</button>
+        <button class="btn" onclick="ans(12, true, this)">B) Joey</button>
+        <button class="btn" onclick="ans(12, false, this)">C) Ross</button>
+        <div id="exp-12" class="exp"></div>
+    </div>
 
-    if (percent >= 90) {
-        iqScore = "IQ 150+";
-        iqTitle = "☕ Archianalityk Central Perk";
-        feedback = "Niesamowite! Twoja wiedza o serialu 'Przyjaciele' jest na poziomie eksperckim! Znasz każdy szczegół, cytat i anegdotę.";
-    } else if (percent >= 70) {
-        iqScore = "IQ 130 - 140";
-        iqTitle = "🛋️ Wesoły Bywalec Nowego Jorku";
-        feedback = "Gratulacje! Twój wynik wskazuje na bardzo wysokie IQ fanowskie. Oglądałeś serial z dużą uwagą!";
-    } else if (percent >= 50) {
-        iqScore = "IQ 110 - 120";
-        iqTitle = "🍕 Przyjaciel z Kanapy";
-        feedback = "Dobry wynik! Znasz najważniejsze wątki. Wystarczy krótki maraton na kanapie, aby zdobyć komplet punktów!";
-    } else {
-        iqScore = "IQ 95";
-        iqTitle = "☕ Nowicjusz w Central Perk";
-        feedback = "Test okazał się wyzwaniem! Czas odpalić 1. sezon od nowa!";
-    }
+    <!-- Pytanie 13 -->
+    <div class="q-box">
+        <div class="q-title">13. Gdzie odbywał się ślub Rossa i Emily?</div>
+        <button class="btn" onclick="ans(13, false, this)">A) W Nowym Jorku</button>
+        <button class="btn" onclick="ans(13, true, this)">B) W Londynie</button>
+        <button class="btn" onclick="ans(13, false, this)">C) W Paryżu</button>
+        <div id="exp-13" class="exp"></div>
+    </div>
 
-    document.getElementById("iq-value").textContent = iqScore;
-    document.getElementById("iq-title").textContent = iqTitle;
-    document.getElementById("feedback-text").textContent = feedback;
-}
+    <!-- Pytanie 14 -->
+    <div class="q-box">
+        <div class="q-title">14. Gdzie na samym początku pracowała Rachel?</div>
+        <button class="btn" onclick="ans(14, true, this)">A) W Central Perk jako kelnerka</button>
+        <button class="btn" onclick="ans(14, false, this)">B) U Ralpha Laurena</button>
+        <button class="btn" onclick="ans(14, false, this)">C) W Bloomingdale's</button>
+        <div id="exp-14" class="exp"></div>
+    </div>
 
-function restartQuiz() {
-    currentIndex = 0;
-    score = 0;
-    document.getElementById("current-score").textContent = s
+    <!-- Pytanie 15 -->
+    <div class="q-box">
+        <div class="q-title">15. Jak nazywa się brat Phoebe?</div>
+        <button class="btn" onclick="ans(15, true, this)">A) Frank Jr.</button>
+        <button class="btn" onclick="ans(15, false, this)">B) Charles</button>
+        <button class="btn" onclick="ans(15, false, this)">C) David</button>
+        <div id="exp-15" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 16 -->
+    <div class="q-box">
+        <div class="q-title">16. Do jakiego miasta wyjechał David (naukowiec), miłość Phoebe?</div>
+        <button class="btn" onclick="ans(16, true, this)">A) Do Mińska</button>
+        <button class="btn" onclick="ans(16, false, this)">B) Do Moskwy</button>
+        <button class="btn" onclick="ans(16, false, this)">C) Do Kijowa</button>
+        <div id="exp-16" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 17 -->
+    <div class="q-box">
+        <div class="q-title">17. Gdzie zaczął się romans Moniki i Chandlera?</div>
+        <button class="btn" onclick="ans(17, false, this)">A) W Las Vegas</button>
+        <button class="btn" onclick="ans(17, true, this)">B) W Londynie</button>
+        <button class="btn" onclick="ans(17, false, this)">C) W Central Perk</button>
+        <div id="exp-17" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 18 -->
+    <div class="q-box">
+        <div class="q-title">18. Jak nazywał się gipsowy pies w mieszkaniu Joeya?</div>
+        <button class="btn" onclick="ans(18, true, this)">A) Pat the Dog</button>
+        <button class="btn" onclick="ans(18, false, this)">B) Barky</button>
+        <button class="btn" onclick="ans(18, false, this)">C) Whitey</button>
+        <div id="exp-18" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 19 -->
+    <div class="q-box">
+        <div class="q-title">19. Kogo grał Joey w "Dniach naszego życia"?</div>
+        <button class="btn" onclick="ans(19, true, this)">A) Dr Drake'a Ramoray</button>
+        <button class="btn" onclick="ans(19, false, this)">B) Dr Richarda Burke</button>
+        <button class="btn" onclick="ans(19, false, this)">C) Dr Hansa Zarkowa</button>
+        <div id="exp-19" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 20 -->
+    <div class="q-box">
+        <div class="q-title">20. Co Rachel dodała przez pomyłkę do deseru (Trifle)?</div>
+        <button class="btn" onclick="ans(20, true, this)">A) Wołowinę z cebulą i groszkiem</button>
+        <button class="btn" onclick="ans(20, false, this)">B) Kiełbasę i ser</button>
+        <button class="btn" onclick="ans(20, false, this)">C) Sos pomidorowy</button>
+        <div id="exp-20" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 21 -->
+    <div class="q-box">
+        <div class="q-title">21. Jak nazywała się pierwsza żona Rossa?</div>
+        <button class="btn" onclick="ans(21, true, this)">A) Carol</button>
+        <button class="btn" onclick="ans(21, false, this)">B) Susan</button>
+        <button class="btn" onclick="ans(21, false, this)">C) Emily</button>
+        <div id="exp-21" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 22 -->
+    <div class="q-box">
+        <div class="q-title">22. Jak ma na imię syn Rossa z pierwszego małżeństwa?</div>
+        <button class="btn" onclick="ans(22, true, this)">A) Ben</button>
+        <button class="btn" onclick="ans(22, false, this)">B) Jack</button>
+        <button class="btn" onclick="ans(22, false, this)">C) Luke</button>
+        <div id="exp-22" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 23 -->
+    <div class="q-box">
+        <div class="q-title">23. Kto miał trzeci sutek (tzw. nubbin)?</div>
+        <button class="btn" onclick="ans(23, false, this)">A) Joey</button>
+        <button class="btn" onclick="ans(23, true, this)">B) Chandler</button>
+        <button class="btn" onclick="ans(23, false, this)">C) Ross</button>
+        <div id="exp-23" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 24 -->
+    <div class="q-box">
+        <div class="q-title">24. Co przenosił Ross, krzycząc słynne "PIVOT!"?</div>
+        <button class="btn" onclick="ans(24, true, this)">A) Kanapę</button>
+        <button class="btn" onclick="ans(24, false, this)">B) Szafę</button>
+        <button class="btn" onclick="ans(24, false, this)">C) Łóżko</button>
+        <div id="exp-24" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 25 -->
+    <div class="q-box">
+        <div class="q-title">25. Kto zagrał Willa Colberta, który nienawidził Rachel?</div>
+        <button class="btn" onclick="ans(25, true, this)">A) Brad Pitt</button>
+        <button class="btn" onclick="ans(25, false, this)">B) Bruce Willis</button>
+        <button class="btn" onclick="ans(25, false, this)">C) Tom Cruise</button>
+        <div id="exp-25" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 26 -->
+    <div class="q-box">
+        <div class="q-title">26. Jakie zwierzęta hodowali Joey i Chandler?</div>
+        <button class="btn" onclick="ans(26, true, this)">A) Kurczaka i Kaczkę</button>
+        <button class="btn" onclick="ans(26, false, this)">B) Psa i Kota</button>
+        <button class="btn" onclick="ans(26, false, this)">C) Dwie papugi</button>
+        <div id="exp-26" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 27 -->
+    <div class="q-box">
+        <div class="q-title">27. Dokąd Chandler skłamał Janice, że ucieka?</div>
+        <button class="btn" onclick="ans(27, false, this)">A) Do Kanady</button>
+        <button class="btn" onclick="ans(27, true, this)">B) Do Jemenu</button>
+        <button class="btn" onclick="ans(27, false, this)">C) Do Meksyku</button>
+        <div id="exp-27" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 28 -->
+    <div class="q-box">
+        <div class="q-title">28. Jak ma na imię córka Rachel i Rossa?</div>
+        <button class="btn" onclick="ans(28, true, this)">A) Emma</button>
+        <button class="btn" onclick="ans(28, false, this)">B) Ella</button>
+        <button class="btn" onclick="ans(28, false, this)">C) Erica</button>
+        <div id="exp-28" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 29 -->
+    <div class="q-box">
+        <div class="q-title">29. Za kogo przebrał się Ross na Święta (Holiday Armadillo)?</div>
+        <button class="btn" onclick="ans(29, true, this)">A) Świątecznego Pancernika</button>
+        <button class="btn" onclick="ans(29, false, this)">B) Żółwia</button>
+        <button class="btn" onclick="ans(29, false, this)">C) Świętego Mikołaja</button>
+        <div id="exp-29" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 30 -->
+    <div class="q-box">
+        <div class="q-title">30. Jak ma na imię ojciec Moniki i Rossa?</div>
+        <button class="btn" onclick="ans(30, true, this)">A) Jack</button>
+        <button class="btn" onclick="ans(30, false, this)">B) Richard</button>
+        <button class="btn" onclick="ans(30, false, this)">C) Charles</button>
+        <div id="exp-30" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 31 -->
+    <div class="q-box">
+        <div class="q-title">31. Kto udzielił ślubu Phoebe i Mike'owi podczas śnieżycy?</div>
+        <button class="btn" onclick="ans(31, true, this)">A) Joey</button>
+        <button class="btn" onclick="ans(31, false, this)">B) Ross</button>
+        <button class="btn" onclick="ans(31, false, this)">C) Chandler</button>
+        <div id="exp-31" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 32 -->
+    <div class="q-box">
+        <div class="q-title">32. Co powtarzał Ross po rozstaniu z Rachel?</div>
+        <button class="btn" onclick="ans(32, true, this)">A) We were on a break!</button>
+        <button class="btn" onclick="ans(32, false, this)">B) I loved her!</button>
+        <button class="btn" onclick="ans(32, false, this)">C) She left me!</button>
+        <div id="exp-32" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 33 -->
+    <div class="q-box">
+        <div class="q-title">33. Jak nazywała się wymyślona gra Chandlera (by oddać pieniądze Joeyowi)?</div>
+        <button class="btn" onclick="ans(33, true, this)">A) Cups (Kubki)</button>
+        <button class="btn" onclick="ans(33, false, this)">B) Bamboozled</button>
+        <button class="btn" onclick="ans(33, false, this)">C) Poker</button>
+        <div id="exp-33" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 34 -->
+    <div class="q-box">
+        <div class="q-title">34. Kim był z zawodu dr Richard Burke?</div>
+        <button class="btn" onclick="ans(34, true, this)">A) Okulistą</button>
+        <button class="btn" onclick="ans(34, false, this)">B) Stomatologiem</button>
+        <button class="btn" onclick="ans(34, false, this)">C) Kardiologiem</button>
+        <div id="exp-34" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 35 -->
+    <div class="q-box">
+        <div class="q-title">35. Jak nazywał się bezwłosy kot Rachel?</div>
+        <button class="btn" onclick="ans(35, true, this)">A) Mrs. Whiskerson</button>
+        <button class="btn" onclick="ans(35, false, this)">B) Fluffy</button>
+        <button class="btn" onclick="ans(35, false, this)">C) Baldy</button>
+        <div id="exp-35" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 36 -->
+    <div class="q-box">
+        <div class="q-title">36. Na czym Ross chciał zagrać na ślubie Moniki i Chandlera?</div>
+        <button class="btn" onclick="ans(36, true, this)">A) Na dudach</button>
+        <button class="btn" onclick="ans(36, false, this)">B) Na pianinie</button>
+        <button class="btn" onclick="ans(36, false, this)">C) Na perkusji</button>
+        <div id="exp-36" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 37 -->
+    <div class="q-box">
+        <div class="q-title">37. Kto pierwszy nakrył Monikę i Chandlera na romansie?</div>
+        <button class="btn" onclick="ans(37, true, this)">A) Joey</button>
+        <button class="btn" onclick="ans(37, false, this)">B) Rachel</button>
+        <button class="btn" onclick="ans(37, false, this)">C) Phoebe</button>
+        <div id="exp-37" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 38 -->
+    <div class="q-box">
+        <div class="q-title">38. Co wykrzyczała Phoebe, widząc ich z okna?</div>
+        <button class="btn" onclick="ans(38, true, this)">A) My eyes! My eyes!</button>
+        <button class="btn" onclick="ans(38, false, this)">B) Oh my god!</button>
+        <button class="btn" onclick="ans(38, false, this)">C) No way!</button>
+        <div id="exp-38" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 39 -->
+    <div class="q-box">
+        <div class="q-title">39. Czym Joey jadł sernik spadły na podłogę na korytarzu?</div>
+        <button class="btn" onclick="ans(39, true, this)">A) Widelcem wyjętym z marynarki</button>
+        <button class="btn" onclick="ans(39, false, this)">B) Łyżką</button>
+        <button class="btn" onclick="ans(39, false, this)">C) Rękami</button>
+        <div id="exp-39" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 40 -->
+    <div class="q-box">
+        <div class="q-title">40. Gdzie po pijaku pobrali się Ross i Rachel?</div>
+        <button class="btn" onclick="ans(40, true, this)">A) W Las Vegas</button>
+        <button class="btn" onclick="ans(40, false, this)">B) W Londynie</button>
+        <button class="btn" onclick="ans(40, false, this)">C) W Atlantic City</button>
+        <div id="exp-40" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 41 -->
+    <div class="q-box">
+        <div class="q-title">41. Kim był z zawodu Mike Hannigan (mąż Phoebe) zanim zrezygnował?</div>
+        <button class="btn" onclick="ans(41, true, this)">A) Prawnikiem</button>
+        <button class="btn" onclick="ans(41, false, this)">B) Lekarzem</button>
+        <button class="btn" onclick="ans(41, false, this)">C) Architektem</button>
+        <div id="exp-41" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 42 -->
+    <div class="q-box">
+        <div class="q-title">42. Co wisiało na fioletowych drzwiach Moniki wokół wizjera?</div>
+        <button class="btn" onclick="ans(42, true, this)">A) Żółta ramka</button>
+        <button class="btn" onclick="ans(42, false, this)">B) Zegar</button>
+        <button class="btn" onclick="ans(42, false, this)">C) Wieniec</button>
+        <div id="exp-42" class="exp"></div>
+    </div>
+
+    <!-- Pytanie 43 -->
+    <div class="q-box">
+        <div class="q-title">43. Jak nazywano nagiego sąsiada z przeciwka?</div>
+        <button class="btn" onclick="ans(43, true, this)">A) Ugly Naked Guy</button>
+        <button class="btn" onclick="ans(43, false, this)">B) Fat Bob</button>
+        <button class="btn" onclick="ans(43, false, this)">C) Bare Willy</button>
+        <div id="exp-43" class="exp"></div
