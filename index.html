@@ -3,325 +3,338 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wielki Quiz z Serialu Przyjaciele - 100 Pytań</title>
+    <title>Wielki Quiz Friends</title>
     <style>
-        :root {
-            --bg-color: #fdf2f8;
-            --card-bg: #ffffff;
-            --primary: #0284c7;
-            --primary-hover: #0369a1;
-            --accent: #e11d48;
-            --success: #16a34a;
-            --danger: #dc2626;
-            --text: #1e293b;
-            --text-light: #64748b;
-        }
-
-        body {
-            font-family: system-ui, -apple-system, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text);
+        * {
+            box-sizing: border-box;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            background-color: #fdf2f8;
+            color: #1f2937;
             display: flex;
             justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
         }
-
-        .container {
-            background-color: var(--card-bg);
-            max-width: 700px;
-            width: 100%;
-            padding: 30px;
+        .quiz-card {
+            background: #ffffff;
             border-radius: 16px;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 600px;
+            padding: 24px;
         }
-
-        .header-status {
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            font-weight: 600;
+            margin-bottom: 16px;
         }
-
         .badge {
             background-color: #e0f2fe;
-            color: var(--primary);
+            color: #0369a1;
             padding: 6px 12px;
             border-radius: 20px;
-            font-size: 0.9rem;
+            font-size: 14px;
+            font-weight: 600;
         }
-
         .score-badge {
             background-color: #fef3c7;
-            color: #d97706;
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 0.9rem;
+            color: #b45309;
         }
-
-        .progress-bar {
-            width: 100%;
+        .progress-bar-bg {
+            background-color: #e5e7eb;
             height: 8px;
-            background-color: #e2e8f0;
             border-radius: 4px;
+            margin-bottom: 24px;
             overflow: hidden;
-            margin-bottom: 25px;
         }
-
-        .progress-fill {
+        .progress-bar-fill {
+            background-color: #6366f1;
             height: 100%;
-            background-color: var(--accent);
             width: 0%;
             transition: width 0.3s ease;
         }
-
-        h2 {
-            font-size: 1.25rem;
-            margin-top: 0;
+        .question-text {
+            font-size: 18px;
+            font-weight: 600;
             margin-bottom: 20px;
             line-height: 1.4;
         }
-
         .options-grid {
-            display: grid;
-            gap: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
             margin-bottom: 20px;
         }
-
         .option-btn {
-            background-color: #f8fafc;
-            border: 2px solid #e2e8f0;
+            background: #f9fafb;
+            border: 2px solid #e5e7eb;
             border-radius: 10px;
-            padding: 14px 18px;
+            padding: 12px 16px;
             text-align: left;
-            font-size: 1rem;
+            font-size: 15px;
             cursor: pointer;
-            transition: all 0.2s;
-            color: var(--text);
+            transition: all 0.2s ease;
+            outline: none;
         }
-
         .option-btn:hover:not(:disabled) {
-            background-color: #f1f5f9;
-            border-color: #cbd5e1;
+            border-color: #6366f1;
+            background: #f4f4ff;
         }
-
         .option-btn.correct {
-            background-color: #dcfce7;
-            border-color: var(--success);
-            color: #14532d;
+            background-color: #dcfce7 !important;
+            border-color: #22c55e !important;
+            color: #15803d;
             font-weight: 600;
         }
-
         .option-btn.incorrect {
-            background-color: #fee2e2;
-            border-color: var(--danger);
-            color: #7f1d1d;
+            background-color: #fee2e2 !important;
+            border-color: #ef4444 !important;
+            color: #b91c1c;
         }
-
         .explanation {
-            background-color: #f0f9ff;
-            border-left: 4px solid var(--primary);
-            padding: 15px;
+            background-color: #f3f4f6;
+            border-left: 4px solid #6366f1;
+            padding: 12px;
             border-radius: 0 8px 8px 0;
             margin-bottom: 20px;
+            font-size: 14px;
             display: none;
         }
-
-        .explanation h4 {
-            margin: 0 0 5px 0;
-            color: var(--primary);
-        }
-
-        .explanation p {
-            margin: 0;
-            font-size: 0.95rem;
-            line-height: 1.5;
-        }
-
-        .action-btn {
-            background-color: var(--accent);
+        .next-btn {
+            background-color: #6366f1;
             color: white;
             border: none;
-            padding: 14px 24px;
             border-radius: 10px;
-            font-size: 1rem;
+            padding: 12px 24px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             width: 100%;
-            transition: background-color 0.2s;
             display: none;
+            transition: background-color 0.2s;
         }
-
-        .action-btn:hover {
-            background-color: #be123c;
+        .next-btn:hover {
+            background-color: #4f46e5;
         }
-
-        .results {
+        .results-container {
             text-align: center;
             display: none;
         }
-
-        .results h2 {
-            font-size: 1.8rem;
-            margin-bottom: 10px;
-        }
-
-        .iq-box {
-            background: linear-gradient(135deg, #e11d48 0%, #4f46e5 100%);
-            color: white;
-            padding: 25px;
-            border-radius: 16px;
-            margin: 20px 0;
-        }
-
         .iq-score {
-            font-size: 2.8rem;
+            font-size: 48px;
             font-weight: 800;
-            margin: 10px 0;
+            color: #6366f1;
+            margin: 16px 0 8px 0;
         }
-
-        .restart-btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-            margin-top: 15px;
+        .iq-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+        .feedback {
+            color: #4b5563;
+            margin-bottom: 24px;
+            line-height: 1.5;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="quiz-card">
     <div id="quiz-screen">
-        <div class="header-status">
-            <span class="badge">Pytanie <span id="current-question-num">1</span> z <span id="total-questions">100</span></span>
-            <span class="score-badge">Punkty: <span id="current-score">0</span></span>
+        <div class="header">
+            <span class="badge">Pytanie <span id="current-question-num">1</span> z <span id="total-questions">50</span></span>
+            <span class="badge score-badge">Punkty: <span id="current-score">0</span></span>
         </div>
         
-        <div class="progress-bar">
-            <div class="progress-fill" id="progress"></div>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progress"></div>
         </div>
-        
-        <h2 id="question-text">Pytanie ładuje się...</h2>
-        
+
+        <div class="question-text" id="question-text">Pytanie ładowanie...</div>
+
         <div class="options-grid" id="options-container"></div>
-        
+
         <div class="explanation" id="explanation-box">
-            <h4 id="explanation-title">Wyjaśnienie:</h4>
+            <strong id="explanation-title"></strong>
             <p id="explanation-text"></p>
         </div>
-        
-        <button class="action-btn" id="next-btn" onclick="nextQuestion()">Następne pytanie</button>
+
+        <button class="next-btn" id="next-btn" onclick="nextQuestion()">Następne pytanie</button>
     </div>
 
-    <div class="results" id="results-screen">
-        <h2>Test Zakończony!</h2>
-        <p>Twój wynik znajomości serialu Przyjaciele:</p>
-        
-        <div class="iq-box">
-            <div>Twój Serialowy Poziom IQ:</div>
-            <div class="iq-score" id="iq-value">IQ 140+</div>
-            <div id="iq-title" style="font-weight: 600;">Mistrz Central Perk</div>
-        </div>
-
-        <p id="feedback-text" style="line-height: 1.6;"></p>
-        <button class="restart-btn" onclick="restartQuiz()">Rozwiąż ponownie</button>
+    <div class="results-container" id="results-screen">
+        <h2>Wynik Quizu Friends</h2>
+        <div class="iq-score" id="iq-value">IQ ---</div>
+        <div class="iq-title" id="iq-title">---</div>
+        <p class="feedback" id="feedback-text">---</p>
+        <button class="next-btn" style="display:block;" onclick="restartQuiz()">Zagraj ponownie</button>
     </div>
 </div>
+
 <script>
 const questions = [
     { q: "Jak ma na imię mała małpka, którą opiekował się Ross?", options: ["Marcel", "Barnaby", "George"], answer: 0, exp: "Marcel był kapucynką Rossa w 1. sezonie serialu." },
     { q: "Jakiej kultowej piosenki uczyła Phoebe grać na gitarze?", options: ["Smelly Cat", "Sticky Shoes", "Angel of the Morning"], answer: 0, exp: "'Smelly Cat' (Cuchnący Kot) to najbardziej znany utwór Phoebe Buffay." },
     { q: "Jak nazywała się kawiarnia, w której spotykali się przyjaciele?", options: ["Central Park Cafe", "Central Perk", "Coffee Perk"], answer: 1, exp: "Kawiarnia nazywa się Central Perk – gra słów nawiązująca do Central Parku." },
-    { q: "Czym z zawodu zajmuje się Chandler Bing przez większość pierwszych sezonów?", options: ["Analizą danych i rekonfiguracją danych", "Aktorstwem", "Księgowością bankową"], answer: 0, exp: "Chandler zajmował się przetwarzaniem danych ('Statistical analysis and data reconfiguration')." },
+    { q: "Czym z zawodu zajmuje się Chandler Bing przez większość pierwszych sezonów?", options: ["Analizą i rekonfiguracją danych", "Aktorstwem", "Księgowością bankową"], answer: 0, exp: "Chandler zajmował się przetwarzaniem danych ('Statistical analysis and data reconfiguration')." },
     { q: "Jakie imię nosiła lalka używana przez Joeya do spania?", options: ["Hugsy", "Barnaby", "Teddy"], answer: 0, exp: "Hugsy to ukochany pluszowy pingwin Joeya." },
     { q: "Ile razy Ross Geller brał ślub w trakcie trwania serialu?", options: ["2 razy", "3 razy", "4 razy"], answer: 1, exp: "Ross brał ślub 3 razy: z Carol, Emily oraz z Rachel w Las Vegas." },
     { q: "Jakie było drugie imię Chandlera?", options: ["Francis", "Muriel", "Eustachy"], answer: 1, exp: "Drugie imię Chandlera to Muriel." },
-    { q: "Kim z zawodu jest Ross Geller?", options: ["Geologiem", "Paleontologiem", "Biologiem molekularnym"], answer: 1, exp: "Ross jest doktorem paleontologii pracującym m.in. w Muzeum Historii Naturalnej i na uniwersytecie." },
+    { q: "Kim z zawodu jest Ross Geller?", options: ["Geologiem", "Paleontologiem", "Biologiem molekularnym"], answer: 1, exp: "Ross jest doktorem paleontologii." },
     { q: "Jakie nazwisko panieńskie miała Monica?", options: ["Buffay", "Green", "Geller"], answer: 2, exp: "Monica i Ross to rodzeństwo, oboje noszą nazwisko Geller." },
-    { q: "Z kogo była zrobiona słynna kanapka Rossa, którą ktoś zjadł w pracy?", options: ["Z pieczonego indyka ze 'Moist Makerem'", "Z szynki i sera", "Z klopsików"], answer: 0, exp: "Była to kanapka ze świątecznego indyka z dodatkową kromką chleba namoczoną w sosie w środku." },
-    { q: "Jak nazywa się bliźniacza siostra Phoebe?", options: ["Ursula", "Pamela", "Fiona"], answer: 0, exp: "Siostra bliźniaczka Phoebe to Ursula, która pracowała jako kelnerka w 'Mad About You'." },
+    { q: "Z kogo była zrobiona słynna kanapka Rossa, którą ktoś zjadł w pracy?", options: ["Z pieczonego indyka z 'Moist Makerem'", "Z szynki i sera", "Z klopsików"], answer: 0, exp: "Była to kanapka z indyka z dodatkową kromką chleba namoczoną w sosie w środku." },
+    { q: "Jak nazywa się bliźniacza siostra Phoebe?", options: ["Ursula", "Pamela", "Fiona"], answer: 0, exp: "Siostra bliźniaczka Phoebe to Ursula." },
     { q: "Który z bohaterów wypowiada słynne zdanie 'How you doin'?'", options: ["Chandler", "Joey", "Ross"], answer: 1, exp: "To kultowy tekst Joeya Tribbiani używany na podryw." },
-    { q: "W jakim mieście odbywa się ślub Rossa i Emily?", options: ["W Nowym Jorku", "W Londynie", "W Paryżu"], answer: 1, exp: "Ślub Rossa i Emily odbył się w ruinach zabytkowego budynku w Londynie." },
-    { q: "Czym zajmowała się Rachel Green na samym początku serialu (Sezon 1)?", options: ["Była kelnerką w Central Perk", "Pracowała w Bloomingdale's", "Pracowała u Ralpha Laurena"], answer: 0, exp: "Po ucieczce z własnego ślubu Rachel zaczęła pracować jako kelnerka w kawiarni Central Perk." },
-    { q: "Jakie imię nosi brat Phoebe?", options: ["Frank Jr.", "Charles", "David"], answer: 0, exp: "Brat Phoebe to Frank Buffay Jr., dla którego urodziła trojaczki." },
+    { q: "W jakim mieście odbywa się ślub Rossa i Emily?", options: ["W Nowym Jorku", "W Londynie", "W Paryżu"], answer: 1, exp: "Ślub Rossa i Emily odbył się w ruinach budynku w Londynie." },
+    { q: "Czym zajmowała się Rachel Green na samym początku serialu (Sezon 1)?", options: ["Była kelnerką w Central Perk", "Pracowała w Bloomingdale's", "Pracowała u Ralpha Laurena"], answer: 0, exp: "Po ucieczce z własnego ślubu Rachel zaczęła pracować jako kelnerka." },
+    { q: "Jakie imię nosi brat Phoebe?", options: ["Frank Jr.", "Charles", "David"], answer: 0, exp: "Brat Phoebe to Frank Buffay Jr." },
     { q: "Kto był miłością życia Phoebe z okresu przed Mikiem, który wyjechał do Mińska?", options: ["David naukowiec", "Gary policjant", "Duncan łyżwiarz"], answer: 0, exp: "David (naukowiec) wyjechał na badania do Mińska." },
-    { q: "W jaki sposób Chandler i Monica zaczęli swój romans?", options: ["Na imprezie w Nowym Jorku", "Podczas wyjazdu na ślub Rossa w Londynie", "W wycieczce do Las Vegas"], answer: 1, exp: "Zbliżyli się do siebie w Londynie w nocy przed ślubem Rossa." },
-    { q: "Jak ma na imię pies ze stali/gipsu, którego Joey kupił do nowego mieszkania?", options: ["Pat the Dog", "Barky", "Whitey"], answer: 0, exp: "Wielki biały pies z gipsu nazywał się Pat the Dog." },
+    { q: "W jaki sposób Chandler i Monica zaczęli swój romans?", options: ["Na imprezie w Nowym Jorku", "Podczas wyjazdu na ślub Rossa w Londynie", "W wycieczce do Las Vegas"], answer: 1, exp: "Zbliżyli się do siebie w Londynie przed ślubem Rossa." },
+    { q: "Jak ma na imię pies z gipsu, którego Joey kupił do nowego mieszkania?", options: ["Pat the Dog", "Barky", "Whitey"], answer: 0, exp: "Wielki biały pies z gipsu nazywał się Pat the Dog." },
     { q: "Kto grał rolę dr. Drake'a Ramoray w serialu 'Dni naszego życia'?", options: ["Joey Tribbiani", "Chandler Bing", "Ross Geller"], answer: 0, exp: "Joey grał neurochirurga Drake'a Ramoraya." },
-    { q: "Co Rachel przez pomyłkę dodała do tradycyjnego angielskiego deseru (Trifle)?", options: ["Książkę telefoniczną", "Mięso wołowe z cebulą i groszkiem", "Sos majonezowy"], answer: 1, exp: "Rachel skleiła dwie strony przepisu i połączyła deser owocowy z zapiekanką pasterską." },
+    { q: "Co Rachel przez pomyłkę dodała do tradycyjnego angielskiego deseru (Trifle)?", options: ["Książkę telefoniczną", "Mięso wołowe z cebulą i groszkiem", "Sos majonezowy"], answer: 1, exp: "Rachel skleiła dwie strony przepisu i połączyła deser z zapiekanką pasterską." },
     { q: "Jak nazywała się pierwsza żona Rossa, która okazała się lesbijką?", options: ["Carol", "Susan", "Emily"], answer: 0, exp: "Carol Willick była pierwszą żoną Rossa i matką jego syna Bena." },
     { q: "Jak nazywa się syn Rossa i Carol?", options: ["Ben", "Jack", "Emma"], answer: 0, exp: "Syn Rossa i Carol dostał na imię Ben." },
-    { q: "Który z bohaterów ma na stopie 3 sutki/trzecią brodawkę?", options: ["Joey", "Chandler", "Ross"], answer: 1, exp: "Chandler miał trzeci sutek ('nubbin'), który później usunął chirurgicznie." },
-    { q: "Czym groził Ross krzycząc słynne 'PIVOT!'?", options: ["Przenoszeniem kanapy po schodach", "Kładzeniem dywanu", "Pakowaniem walizki"], answer: 0, exp: "Krzyczał 'PIVOT!' podczas próby wniesienia nowej kanapy po wąskiej klatce schodowej." },
-    { q: "Jak nazywała się postać grana przez Brada Pitta w odcinku dziękczynnym?", options: ["Will Colbert", "Tommy", "Roy"], answer: 0, exp: "Brad Pitt zagrał Willa Colberta, współzałożyciela klubu 'Nienawidzę Rachel Green'." },
+    { q: "Który z bohaterów ma na ciele trzecią brodawkę (sutek)?", options: ["Joey", "Chandler", "Ross"], answer: 1, exp: "Chandler miał trzeci sutek ('nubbin'), który później usunął." },
+    { q: "Czym groził Ross krzycząc słynne 'PIVOT!'?", options: ["Przenoszeniem kanapy po schodach", "Kładzeniem dywanu", "Pakowaniem walizki"], answer: 0, exp: "Krzyczał 'PIVOT!' podczas próby wniesienia nowej kanapy po klatce schodowej." },
+    { q: "Jak nazywała się postać grana przez Brada Pitta w odcinku dziękczynnym?", options: ["Will Colbert", "Tommy", "Roy"], answer: 0, exp: "Brad Pitt zagrał Willa Colberta, założyciela klubu 'Nienawidzę Rachel Green'." },
     { q: "Jakie zwierzaki mieszkały w mieszkaniu Joeya i Chandlera?", options: ["Pies i kot", "Kurczak i Kaczka", "Papuga i chomik"], answer: 1, exp: "Mieli Kurczaka i Kaczkę (Chick and Duck)." },
-    { q: "Do jakiego kraju przeniósł się Chandler w ramach ucieczki przed Janice?", options: ["Do Francji", "Wyspy Owcze", "Jemen"], answer: 2, exp: "Chandler skłamał Janice, że przenosi się do Jemenu pod adres '15 Yemen Road, Yemen'." },
-    { q: "Jakie imię nosi córka Rachel i Rossa?", options: ["Emma", "Ella", "Erica"], answer: 0, exp: "Ich córka otrzymała imię Emma (imię oddane przez Monikę)." },
-    { q: "Jakie imię nosi postać, za którą przebrał się Ross na Święto Dziękczynienia/Panczestka?", options: ["Świąteczna Pancernik (Holiday Armadillo)", "Święty Mikołaj", "Renifer"], answer: 0, exp: "Ross przebrał się za Świątecznego Pancernika, by nauczyć Bena o Hanuce." },
-    { q: "Kim z zawodu jest ojciec Moniki i Rossa?", options: ["Jack Geller – biznesmen", "Richard Burke – lekarz", "Charles Bing"], answer: 0, exp: "Ojcem Moniki i Rossa był Jack Geller." },
-    { q: "Kto z przyjął ostatecznie ślub Phoebe i Mike'a na ulicy w śnieżycy?", options: ["Joey", "Ross", "Chandler"], answer: 0, exp: "Joey udzielił im ślubu jako wyświęcony minister internetowy." },
-    { q: "Jakie słynne zdanie powtarzał Ross w kwestii rozstania z Rachel?", options: ["We were on a break!", "I loved her!", "She left me!"], answer: 0, exp: "'Mieliśmy przerwę!' (We were on a break!) to flagowy tekst sporu Rossa i Rachel." },
-    { q: "Jak nazywa się gra planszowa stworzona przez Chandlera, by dać Joeyowi pieniądze?", options: ["Cups", "Bamboozled", "Firehouse"], answer: 0, exp: "Chandler wymyślił bezsensowną grę w 'Kubki' (Cups), by przegrać z Joeyem i dać mu gotówkę." },
-    { q: "Gdzie Monica spotkała swojego starszego partnera, dr. Richarda Burke'a?", options: ["W szpitalu", "Na przyjęciu u rodziców (był przyjacielem ojca)", "W kawiarni"], answer: 1, exp: "Richard był wieloletnim przyjacielem Jacka Gellera i okulistą." },
-    { q: "Która aktorka zagrała matkę Moniki i Rossa (Judy Geller)?", options: ["Christina Pickles", "Teri Garr", "Morgan Fairchild"], answer: 0, exp: "Christina Pickles wcieliła się w postać chłodnej matki – Judy Geller." },
-    { q: "Jakie imię nosił kot bez sierści (Sphynx) kupiony przez Rachel?", options: ["Mrs. Whiskerson", "Fluffy", "Baldy"], answer: 0, exp: "Rachel kupiła drogiego kota Mrs. Whiskerson, który okazał się bardzo agresywny." },
-    { q: "Na jakim instrumencie próbował grać Ross przed ślubem Moniki i Chandlera?", options: ["Na dudach", "Na skrzypcach", "Na puzonie"], answer: 0, exp: "Ross uczył się grać na dudach, by niespodziewanie zagrać na ślubie." },
-    { q: "Który z bohaterów pracował jako model na plakatach kampanii dotyczącej chorób wenerycznych?", options: ["Joey", "Chandler", "Ross"], answer: 0, exp: "Joey pozował do plakatów 'Mario ma wenerę' (VD)." },
-    { q: "Jak nazywała się matka Phoebe, która popełniła samobójstwo?", options: ["Lily", "Phoebe", "Ursula"], answer: 0, exp: "Biologiczna matka nazywała się Phoebe, ale wychowywała ją Lily Buffay." },
-    { q: "Jak miały na imię trojaczki urodzone przez Phoebe?", options: ["Frank Jr. Jr., Leslie, Chandler", "Ben, Emma, Jack", "Joey, Ross, Monica"], answer: 0, exp: "Phoebe nazwała je Frank Jr. Jr., Leslie oraz Chandler (który okazał się dziewczynką)." },
-    { q: "W jakiej restauracji pracowała Monica jako szefowa kuchni nosząca sztuczny biust i czapkę kowbojską?", options: ["Moondance Diner", "Central Diner", "Java Cafe"], answer: 0, exp: "Pracowała w tematycznej restauracji z lat 50. 'Moondance Diner'." },
-    { q: "Co dostał Chandler na przeprosiny od Joeya, gdy spędził czas w drewnianej skrzyni?", options: ["Wybaczenie za pocałowanie dziewczyny Joeya (Kathy)", "Zegarek", "Nowy fotel"], answer: 0, exp: "Chandler siedział w skrzyni w Dzień Dziękczynienia, by odzyskać zaufanie Joeya po pocałowaniu Kathy." },
-    { q: "Kto przypadkowo wygadał się Rachel, że Ross jest w niej zakochany w Sezonie 1?", options: ["Chandler", "Monica", "Phoebe"], answer: 0, exp: "Chandler wspomniał o tym przy pakowaniu prezentów urodzinowych dla Rachel." },
-    { q: "Jakie imię nosiła szalona współlokatorka Chandlera, gdy Joey się wyprowadził?", options: ["Eddie", "Kip", "Mark"], answer: 0, exp: "Eddie Menuek był nieprzewidywalnym i szalonym współlokatorem Chandlera." },
-    { q: "Kim z zawodu jest matka Chandlera (Nora Tyler Bing)?", options: ["Pisarką powieści erotycznych", "Aktorką", "Piosenkarką jazzową"], answer: 0, exp: "Nora Bing była popularną autorką pikantnych romansów." },
-    { q: "W jakiej operze mydlanej Joey grał rolę Dr Drake'a Ramoray?", options: ["Days of Our Lives (Dni naszego życia)", "General Hospital", "As the World Turns"], answer: 0, exp: "Grał w tasiemcu 'Days of Our Lives'." },
-    { q: "Jak nazwała się wymyślona tożsamość Joeya, gdy chciał brzmieć mądrze?", options: ["Ken Adams", "Regina Phalange", "Joseph Stalin"], answer: 0, exp: "Joey używał pseudonimu Ken Adams (Phoebe używała Regina Phalange)." },
-    { q: "Jaki był ulubiony przysmak Joeya, którego 'nigdy się nie dzieli'?", options: ["Jedzeniem (Joey doesn't share food!)", "Pizza", "Frytki"], answer: 0, exp: "Kultowa zasada: 'Joey nie dzieli się jedzeniem!'." },
-    { q: "Jak miał na imię facet z kawiarni, który przez lata kochał się w Rachel?", options: ["Gunther", "Terry", "Paul"], answer: 0, exp: "Gunther, barista z Central Perk, potajemnie kochał Rachel." },
-    { q: "Gdzie Monica i Chandler adoptowali swoje bliźnięta?", options: ["W szpitalu od matki o imieniu Erica", "W sierocińcu w Ohio", "W Nowym Jorku"], answer: 0, exp: "Biologiczną matką dzieci (Jacka i Erici) była młoda dziewczyna Erica z Ohio." },
-    { q: "Jak ma na imię mąż Phoebe z końcówki serialu?", options: ["Mike Hannigan", "David", "Gary"], answer: 0, exp: "Phoebe wyszła za mężatka Mike'a Hannigana (w tej roli Paul Rudd)." },
-    { q: "Jakie było słynne hasło Phoebe, gdy przedstawiała swoje fałszywe nazwisko?", options: ["Regina Phalange", "Princess Consuela", "Banana Hammock"], answer: 0, exp: "Phoebe używała alter ego Regina Phalange." },
-    { q: "Jak nosi imię ojciec Rachel?", options: ["Leonard Green", "Jack Green", "Robert Green"], answer: 0, exp: "Doktor Leonard Green był zamożnym i wymagającym kardiologiem/naczyniowcem." },
-    { q: "Co Monica zbierała i schowała w tajemniczej szafce na końcu korytarza?", options: ["Bałagan i graty", "Stare ubrania", "Prezenty świąteczne"], answer: 0, exp: "Mimo że była pedantką, w zamienionej szafce trzymała wielki chaos i niepotrzebne rzeczy." },
-    { q: "Ile kroków dzieliło mieszkanie Moniki od kawiarni zdaniem Rossa?", options: ["97 kroków", "10 kroków", "50 kroków"], answer: 0, exp: "Ross wyliczył, że to dokładnie 97 kroków." },
-    { q: "Jak nazywał się obrzydliwy sąsiad z naprzeciwka, który obserwował ich nagusieńko?", options: ["Ugly Naked Guy (Obrzydliwy Nagi Facet)", "Fat Bob", "Old Man Shaver"], answer: 0, exp: "Postać znana jako Obrzydliwy Nagi Facet mieszkał w budynku naprzeciwko." },
-    { q: "W jaki sposób Ross zdobył mieszkanie Obrzydliwego Nagiego Faceta?", options: ["Robiąc z nim rzeczy na golasa", "Dając mu łapówkę", "Wygrywając w karty"], answer: 0, exp: "Ross spędził z nim czas na golasa i jadł z nim miniaturowe muffinki." },
-    { q: "Jak nazywały się zasłony w mieszkaniu Moniki?", options: ["Nie miała zasłon, były w kwiaty", "W paski", "Zielone"], answer: 0, exp: "W mieszkaniu Moniki w salonie wiszą charakterystyczne firanki i żółta ramka na wizjerze." },
-    { q: "Co wisiało na fioletowych drzwiach mieszkania Moniki wokół wizjera?", options: ["Żółta drewniana ramka", "Zegar", "Lusterko"], answer: 0, exp: "Słynna żółta ramka na wizjer (pierwotnie lusterko, które pękło)." },
-    { q: "Jak ma na imię dziewczyna Rossa z 1. sezonu, z którą poleciał do Chin?", options: ["Julie", "Mona", "Bonnie"], answer: 0, exp: "Julie była koleżanką Rossa ze studiów, spotkali się ponownie na wykopaliskach w Chinach." },
-    { q: "Kto z przyjacielskiego grona miał brata bliźniaka/siostrę?", options: ["Phoebe", "Monica", "Rachel"], answer: 0, exp: "Phoebe ma siostrę bliźniaczkę Ursulę." },
-    { q: "Do jakiego miasta wyjeżdżała Rachel pod koniec ostatniego sezonu przed rezygnacją?", options: ["Do Paryża", "Do Londynu", "Do Mediolanu"], answer: 0, exp: "Rachel dostała pracę u Ralpha Laurena w Paryżu." },
-    { q: "W jaki sposób Joey zapamiętał imię dziewczyny w teleturnieju 'Bamboozled'?", options: ["Nie zapamiętał", "Wymyślił postać", "Zapamiętał dzięki kartom"], answer: 0, exp: "Pytanie nawiązuje do skomplikowanych zasad teleturnieju Bamboozled." },
-    { q: "Czym Chandler i Joey odpędzali strach przed duchami w swoim mieszkaniu?", options: ["Fotelami typu Recliner (Roscoe/Rosie)", "Oglądaniem Słonecznego Patrolu", "Grając w piłkarzyki"], answer: 1, exp: "Bohaterowie pasjonowali się oglądaniem serialu 'Słoneczny Patrol' (Baywatch)." },
-    { q: "Która z dziewczyn uderzyła Rossa w twarz podczas gry w futbol amerykański w Dzień Dziękczynienia?", options: ["Monica", "Phoebe", "Rachel"], answer: 0, exp: "Monica rywalizowała z Rossem o puchar 'Geller Cup'." },
-    { q: "Co było trofeum w rodzinnym meczu futbolowym Gellerów?", options: ["Geller Cup (troll przyklejony do deski)", "Srebrny puchar", "Złota piłka"], answer: 0, exp: "Troll przyczepiony do kawałka drewna, wyrzucony kiedyś do jeziora." },
-    { q: "Który z bohaterów jako jedyny nie ma rodzeństwa?", options: ["Chandler", "Joey", "Ross"], answer: 0, exp: "Chandler jest jedynakiem. Joey ma 7 sióstr, Ross i Monica to rodzeństwo, Rachel ma 2 siostry, Phoebe ma siostrę i brata." },
-    { q: "Jak nazywają się siostry Rachel?", options: ["Amy i Jill", "Ursula i Mary", "Erica i Karen"], answer: 0, exp: "Siostry Rachel to Amy (Christina Applegate) oraz Jill (Reese Witherspoon)." },
-    { q: "Jakie słynne słowo wypowiedziała mała Rachel po wypadku w dzieciństwie?", options: ["Shoe (But)", "Daddy", "No"], answer: 0, exp: "Jej pierwszym słowem było 'Shoe'." },
-    { q: "W kim podkochiwał się Chandler w młodości/czasach szkolnych?", options: ["W dziewczynie z reklamy", "W Monice", "W Rachel"], answer: 2, exp: "Pocałował Rachel na imprezie w college'u." },
-    { q: "Z czym zmagała się Monica w czasach nastoletnich?", options: ["Z dużą nadwagą", "Z jąkaniem", "Z brakiem pewności siebie"], answer: 0, exp: "Retrospekcje ukazują grubą Monikę ('Fat Monica')." },
-    { q: "Jak Ross stracił dziewictwo?", options: ["Z Carol w bibliotece/na polanie", "Z Rachel", "Z Julie"], answer: 0, exp: "Ross stracił dziewictwo z Carol na uczelni." },
-    { q: "Jak nazywa się ulubiony zespół muzyczny Rossa i Chandlera ze studiów?", options: ["Way/No Way", "Gandalf", "The Rembrandts"], answer: 0, exp: "Wykonali własny zespół syntetyzatorowy 'Way/No Way'." },
-    { q: "Gdzie pracowała Rachel, kiedy poznała Marka?", options: ["W Fortunoff / Bloomingdale's", "W Guccim", "W Central Perk"], answer: 0, exp: "Mark pomógł jej zdobyć pracę w Bloomingdale's." },
-    { q: "Dlaczego Joey musiał nosić męską torebkę (Ichibaan)?", options: ["Dostał ją od Rachel do stylizacji", "Wygrał zakład", "Dostał jako rekwizyt"], answer: 0, exp: "Rachel ubrała go w męską torbę na przesłuchanie." },
-    { q: "Jaka była japońska reklama szminki dla mężczyzn, w której zagrał Joey?", options: ["Ichiban - Lipstick for men", "Saiko", "Tokyo Lip"], answer: 0, exp: "Joey zagrał w japońskiej reklamie 'Ichiban! Lipstick for men'." },
-    { q: "O co pokłócili się Ross i Rachel podczas nocy, w której spisali 18 stron listu?", options: ["O to, czy Ross przeczytał list i wziął całą odpowiedzialność", "O pieniądze", "O kota"], answer: 0, exp: "List miał 18 stron ('Front and back!'). Ross zasnął podczas czytania." },
-    { q: "Ile stron miał słynny list Rachel do Rossa?", options: ["18 stron (z obu stron!)", "5 stron", "24 strony"], answer: 0, exp: "'18 pages! Front and back!'." },
-    { q: "Jak ma na imię aktor grający Joeya Tribbiani?", options: ["Matt LeBlanc", "Matthew Perry", "David Schwimmer"], answer: 0, exp: "Matt LeBlanc wcielił się w postać Joeya." },
-    { q: "Jak ma na imię aktor grający Chandlera Binga?", options: ["Matthew Perry", "Matt LeBlanc", "David Schwimmer"], answer: 0, exp: "Niezapomniany Matthew Perry zagrał Chandlera." },
-    { q: "Jak ma na imię aktor grający Rossa Gellera?", options: ["David Schwimmer", "Matthew Perry", "Matt LeBlanc"], answer: 0, exp: "David Schwimmer zagrał postać Rossa." },
-    { q: "Jak nazywa się aktorka grająca Monikę Geller?", options: ["Courteney Cox", "Jennifer Aniston", "Lisa Kudrow"], answer: 0, exp: "Courteney Cox zagrała Monikę." },
-    { q: "Jak nazywa się aktorka grająca Rachel Green?", options: ["Jennifer Aniston", "Courteney Cox", "Lisa Kudrow"], answer: 0, exp: "Jennifer Aniston zagrała Rachel." },
-    { q: "Jak nazywa się aktorka grająca Phoebe Buffay?", options: ["Lisa Kudrow", "Jennifer Aniston", "Courteney Cox"], answer: 0, exp: "Lisa Kudrow zagrała postać Phoebe." },
-    { q: "Jaki instrument był ulubionym rekwizytem Phoebe?", options: ["Gitara akustyczna", "Pianino", "Harmonijka"], answer: 0, exp: "Phoebe zawsze grała na gitarze akustycznej." },
-    { q: "Kto z szóstki przyjaciół jako pierwszy dowiedział się o romansie Moniki i Chandlera?", options: ["Joey", "Phoebe", "Rachel"], answer: 0, exp: "Joey odkrył to jako pierwszy (zauważył zalotne gesty i brudną bieliznę)." },
-    { q: "Jak zareagowała Phoebe, gdy zobaczyła Monikę i Chandlera uprawiających seks przez okno?", options: ["Krzyczała: 'My eyes! My eyes!'", "Zaczęła płakać", "Zadzwoniła na policję"], answer: 0, exp: "Kultowy cytat Phoebe: 'CHANDLER AND MONICA! MY EYES! MY EYES!'." },
-    { q: "Jakie imię nosił przystojny instruktor tańca, w którym zakochali się wszyscy w odcinku ze studniówką?", options: ["Nie dotyczy (chodzi o film z prom)", "Roy", "Mark"], answer: 0, exp: "Film wideo ukazuje przygotowania Moniki i Rachel do balu maturalnego." },
-    { q: "Kto zjadł sernik z podłogi na korytarzu z Chandlerem i Rachel?", options: ["Joey (wyciągnął widelczyk z kieszeni)", "Ross", "Phoebe"], answer: 0, exp: "Joey dołączył do nich i wyciągnął własny widelec z marynarki." },
-    { q: "Skąd pochodził genialny sernik, o który walczyli Rachel i Chandler?", options: ["Z Mama's Little Bakery w Chicago", "Z piekarni na Brooklyn", "Z restauracji Moniki"], answer: 0, exp: "Pochodził z 'Mama's Little Bakery' w Chicago." },
-    { q: "Jaki odcień włosów miał Gunther?", options: ["Jaskrawy blond (Bright Blond)", "Ciemny brąz", "Rudy"], answer: 0, exp: "Miał charakterystyczne bardzo ja
+    { q: "Do jakiego kraju przeniósł się Chandler w ramach ucieczki przed Janice?", options: ["Do Francji", "Wyspy Owcze", "Jemen"], answer: 2, exp: "Chandler skłamał Janice, że przenosi się pod adres '15 Yemen Road, Yemen'." },
+    { q: "Jakie imię nosi córka Rachel i Rossa?", options: ["Emma", "Ella", "Erica"], answer: 0, exp: "Ich córka otrzymała imię Emma." },
+    { q: "Za kogo przebrał się Ross na Święta, by opowiedzieć Benowi o Hanuce?", options: ["Świątecznego Pancernika", "Świętego Mikołaja", "Renifera"], answer: 0, exp: "Ross przebrał się za Świątecznego Pancernika (Holiday Armadillo)." },
+    { q: "Jak ma na imię ojciec Moniki i Rossa?", options: ["Jack", "Richard", "Charles"], answer: 0, exp: "Ojcem Moniki i Rossa był Jack Geller." },
+    { q: "Kto udzielił ślubu Phoebe i Mike'owi podczas śnieżycy na ulicy?", options: ["Joey", "Ross", "Chandler"], answer: 0, exp: "Joey udzielił im ślubu jako wyświęcony minister internetowy." },
+    { q: "Jakie słynne zdanie powtarzał Ross w kwestii rozstania z Rachel?", options: ["We were on a break!", "I loved her!", "She left me!"], answer: 0, exp: "'We were on a break!' (Mieliśmy przerwę!) to flagowy tekst Rossa." },
+    { q: "Jak nazywa się gra planszowa stworzona przez Chandlera, by dać Joeyowi pieniądze?", options: ["Cups", "Bamboozled", "Firehouse"], answer: 0, exp: "Chandler wymyślił bezsensowną grę w 'Kubki' (Cups), by przegrać z Joeyem." },
+    { q: "Kim z zawodu był dr Richard Burke – starszy partner Moniki?", options: ["Okulistą", "Chirurgiem", "Dentystą"], answer: 0, exp: "Richard był cenionym okulistą i przyjacielem jej ojca." },
+    { q: "Jakie imię nosił kot bez sierści (Sphynx) kupiony przez Rachel?", options: ["Mrs. Whiskerson", "Fluffy", "Baldy"], answer: 0, exp: "Rachel kupiła drogiego kota Mrs. Whiskerson." },
+    { q: "Na jakim instrumencie próbował grać Ross na ślub Moniki i Chandlera?", options: ["Na dudach", "Na skrzypcach", "Na puzonie"], answer: 0, exp: "Ross uczył się grać na dudach, by niespodziewanie zagrać na uroczystości." },
+    { q: "Kto z przyjacielskiego grona jako pierwszy dowiedział się o romansie Moniki i Chandlera?", options: ["Joey", "Phoebe", "Rachel"], answer: 0, exp: "Joey odkrył to jako pierwszy w odcinku z brudną bielizną." },
+    { q: "Jak zareagowała Phoebe, gdy zobaczyła Monikę i Chandlera przez okno?", options: ["Krzyczała: 'My eyes! My eyes!'", "Zaczęła płakać", "Zadzwoniła na policję"], answer: 0, exp: "Kultowy cytat Phoebe: 'CHANDLER AND MONICA! MY EYES! MY EYES!'." },
+    { q: "Z czym Chandler i Joey jedli sernik skradziony sąsiadce wprost z podłogi na korytarzu?", options: ["Widelcem wyciągniętym z kieszeni", "Łyżką", "Gołymi rękami"], answer: 0, exp: "Joey dołączył do nich, wyciągając własny widelec z marynarki." },
+    { q: "Gdzie odbył się szalony ślub Rossa i Rachel pod wpływem alkoholu?", options: ["W kaplicy w Las Vegas", "W Atlantic City", "W Nowym Jorku"], answer: 0, exp: "Pobrali się po pijanemu w kaplicy w Las Vegas z dorysowanymi wąsami." },
+    { q: "Czym zajmował się mąż Phoebe, Mike Hannigan, zanim został pianistą?", options: ["Był prawnikiem", "Był lekarzem", "Był aktorem"], answer: 0, exp: "Mike zrezygnował z kariery prawniczej na rzecz pasji do muzyki." },
+    { q: "Jaki przedmiot wisiał na fioletowych drzwiach mieszkania Moniki wokół wizjera?", options: ["Żółta drewniana ramka", "Zegar", "Lusterko"], answer: 0, exp: "Słynna żółta ramka na wizjer." },
+    { q: "Jak nazywał się nagi sąsiad obserwowany z okna mieszkania Moniki?", options: ["Ugly Naked Guy", "Fat Bob", "Old Man Shaver"], answer: 0, exp: "Postać znana w polskiej wersji jako Obrzydliwy Nagi Facet." },
+    { q: "Jakie słynne słowo/zwrot wykrzykiwała Janice przy każdym wejściu?", options: ["OH... MY... GOD!", "Hello Boys!", "Hi Chandler!"], answer: 0, exp: "Janice zawsze witała ich kultowym 'OH... MY... GOD!'." },
+    { q: "Jakie imię nosiła szalona współlokatorka Chandlera, gdy Joey na chwilę się wyprowadził?", options: ["Eddie", "Kip", "Mark"], answer: 0, exp: "Eddie Menuek był nieprzewidywalnym współlokatorem Chandlera." },
+    { q: "Jak nazywa się alter ego / fałszywe nazwisko używane często przez Phoebe?", options: ["Regina Phalange", "Princess Consuela", "Banana Hammock"], answer: 0, exp: "Phoebe używała tożsamości Regina Phalange." },
+    { q: "Jak na imię miał barista z Central Perk, który potajemnie kochał się w Rachel?", options: ["Gunther", "Terry", "Paul"], answer: 0, exp: "Gunther przez wszystkie sezony cicho kochał Rachel." },
+    { q: "Ile dzieci łącznie pojawiło się w życiu głównych bohaterów na przestrzeni całego serialu?", options: ["7 (Ben, Emma, Trojaczki Phoebe, Bliźnięta Moniki/Chandlera)", "4", "5"], answer: 0, exp: "Ben, Emma, trojaczki (dla brata Phoebe) i bliźnięta adopcyjne Moniki i Chandlera." },
+    { q: "Jaka jest ostatnia linijka tekstu wypowiedziana w finale serialu?", options: ["'Sure. Where?' (Chandler)", "'I got off the plane' (Rachel)", "'Goodbye' (Monica)"], answer: 0, exp: "Gdy idą na ostatnią kawę, Chandler pyta żartobliwie: 'Jasne. Ale gdzie?'." },
+    { q: "Co bohaterowie zostawili na kuchennym blacie w ostatniej scenie serialu?", options: ["Wszystkie klucze do mieszkania", "Filiżanki z kawiarni", "Zdjęcia"], answer: 0, exp: "Każdy z 6 bohaterów odłożył swój komplet kluczy do mieszkania." }
+];
+
+let currentIndex = 0;
+let score = 0;
+let answered = false;
+
+function loadQuestion() {
+    answered = false;
+    const q = questions[currentIndex];
+    
+    document.getElementById("total-questions").textContent = questions.length;
+    document.getElementById("current-question-num").textContent = currentIndex + 1;
+    document.getElementById("progress").style.width = `${((currentIndex) / questions.length) * 100}%`;
+    document.getElementById("question-text").textContent = q.q;
+    
+    const container = document.getElementById("options-container");
+    container.innerHTML = "";
+    
+    document.getElementById("explanation-box").style.display = "none";
+    document.getElementById("next-btn").style.display = "none";
+
+    q.options.forEach((opt, idx) => {
+        const btn = document.createElement("button");
+        btn.className = "option-btn";
+        btn.innerHTML = `<strong>${String.fromCharCode(65 + idx)}.</strong> ${opt}`;
+        btn.onclick = () => checkAnswer(idx, btn);
+        container.appendChild(btn);
+    });
+}
+
+function checkAnswer(selectedIndex, selectedBtn) {
+    if (answered) return;
+    answered = true;
+    
+    const q = questions[currentIndex];
+    const buttons = document.querySelectorAll(".option-btn");
+
+    buttons.forEach(btn => btn.disabled = true);
+
+    if (selectedIndex === q.answer) {
+        selectedBtn.classList.add("correct");
+        score++;
+        document.getElementById("current-score").textContent = score;
+        document.getElementById("explanation-title").textContent = "✓ Świetnie! (+1 pkt)";
+        document.getElementById("explanation-title").style.color = "#15803d";
+    } else {
+        selectedBtn.classList.add("incorrect");
+        buttons[q.answer].classList.add("correct");
+        document.getElementById("explanation-title").textContent = "✕ Niestety błąd!";
+        document.getElementById("explanation-title").style.color = "#b91c1c";
+    }
+
+    document.getElementById("explanation-text").textContent = q.exp;
+    document.getElementById("explanation-box").style.display = "block";
+    
+    if (currentIndex < questions.length - 1) {
+        document.getElementById("next-btn").textContent = "Następne pytanie";
+    } else {
+        document.getElementById("next-btn").textContent = "Podsumuj wynik i oblicz IQ";
+    }
+    document.getElementById("next-btn").style.display = "block";
+}
+
+function nextQuestion() {
+    currentIndex++;
+    if (currentIndex < questions.length) {
+        loadQuestion();
+    } else {
+        showResults();
+    }
+}
+
+function showResults() {
+    document.getElementById("quiz-screen").style.display = "none";
+    document.getElementById("results-screen").style.display = "block";
+    
+    const percent = (score / questions.length) * 100;
+    let iqScore = "";
+    let iqTitle = "";
+    let feedback = "";
+
+    if (percent >= 90) {
+        iqScore = "IQ 150+";
+        iqTitle = "☕ Archianalityk Central Perk";
+        feedback = "Niesamowite! Twoja wiedza o serialu 'Przyjaciele' jest na poziomie eksperckim! Znasz każdy szczegół, cytat i anegdotę.";
+    } else if (percent >= 70) {
+        iqScore = "IQ 130 - 140";
+        iqTitle = "🛋️ Wesoły Bywalec Nowego Jorku";
+        feedback = "Gratulacje! Twój wynik wskazuje na bardzo wysokie IQ fanowskie. Oglądałeś serial z dużą uwagą!";
+    } else if (percent >= 50) {
+        iqScore = "IQ 110 - 120";
+        iqTitle = "🍕 Przyjaciel z Kanapy";
+        feedback = "Dobry wynik! Znasz najważniejsze wątki. Wystarczy krótki maraton na kanapie, aby zdobyć komplet punktów!";
+    } else {
+        iqScore = "IQ 95";
+        iqTitle = "☕ Nowicjusz w Central Perk";
+        feedback = "Test okazał się wyzwaniem! Czas odpalić 1. sezon od nowa!";
+    }
+
+    document.getElementById("iq-value").textContent = iqScore;
+    document.getElementById("iq-title").textContent = iqTitle;
+    document.getElementById("feedback-text").textContent = feedback;
+}
+
+function restartQuiz() {
+    currentIndex = 0;
+    score = 0;
+    document.getElementById("current-score").textContent = s
