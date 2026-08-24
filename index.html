@@ -232,7 +232,6 @@
         <button class="restart-btn" onclick="restartQuiz()">Rozwiąż ponownie</button>
     </div>
 </div>
-
 <script>
 const questions = [
     { q: "Jak ma na imię mała małpka, którą opiekował się Ross?", options: ["Marcel", "Barnaby", "George"], answer: 0, exp: "Marcel był kapucynką Rossa w 1. sezonie serialu." },
@@ -255,7 +254,7 @@ const questions = [
     { q: "Jak ma na imię pies ze stali/gipsu, którego Joey kupił do nowego mieszkania?", options: ["Pat the Dog", "Barky", "Whitey"], answer: 0, exp: "Wielki biały pies z gipsu nazywał się Pat the Dog." },
     { q: "Kto grał rolę dr. Drake'a Ramoray w serialu 'Dni naszego życia'?", options: ["Joey Tribbiani", "Chandler Bing", "Ross Geller"], answer: 0, exp: "Joey grał neurochirurga Drake'a Ramoraya." },
     { q: "Co Rachel przez pomyłkę dodała do tradycyjnego angielskiego deseru (Trifle)?", options: ["Książkę telefoniczną", "Mięso wołowe z cebulą i groszkiem", "Sos majonezowy"], answer: 1, exp: "Rachel skleiła dwie strony przepisu i połączyła deser owocowy z zapiekanką pasterską." },
-    { q: "Jak miała na imię pierwsza żona Rossa, która okazała się lesbijką?", options: ["Carol", "Susan", "Emily"], answer: 0, exp: "Carol Willick była pierwszą żoną Rossa i matką jego syna Bena." },
+    { q: "Jak nazywała się pierwsza żona Rossa, która okazała się lesbijką?", options: ["Carol", "Susan", "Emily"], answer: 0, exp: "Carol Willick była pierwszą żoną Rossa i matką jego syna Bena." },
     { q: "Jak nazywa się syn Rossa i Carol?", options: ["Ben", "Jack", "Emma"], answer: 0, exp: "Syn Rossa i Carol dostał na imię Ben." },
     { q: "Który z bohaterów ma na stopie 3 sutki/trzecią brodawkę?", options: ["Joey", "Chandler", "Ross"], answer: 1, exp: "Chandler miał trzeci sutek ('nubbin'), który później usunął chirurgicznie." },
     { q: "Czym groził Ross krzycząc słynne 'PIVOT!'?", options: ["Przenoszeniem kanapy po schodach", "Kładzeniem dywanu", "Pakowaniem walizki"], answer: 0, exp: "Krzyczał 'PIVOT!' podczas próby wniesienia nowej kanapy po wąskiej klatce schodowej." },
@@ -296,4 +295,33 @@ const questions = [
     { q: "Co wisiało na fioletowych drzwiach mieszkania Moniki wokół wizjera?", options: ["Żółta drewniana ramka", "Zegar", "Lusterko"], answer: 0, exp: "Słynna żółta ramka na wizjer (pierwotnie lusterko, które pękło)." },
     { q: "Jak ma na imię dziewczyna Rossa z 1. sezonu, z którą poleciał do Chin?", options: ["Julie", "Mona", "Bonnie"], answer: 0, exp: "Julie była koleżanką Rossa ze studiów, spotkali się ponownie na wykopaliskach w Chinach." },
     { q: "Kto z przyjacielskiego grona miał brata bliźniaka/siostrę?", options: ["Phoebe", "Monica", "Rachel"], answer: 0, exp: "Phoebe ma siostrę bliźniaczkę Ursulę." },
-    { q: "Do jakiego miasta wyjeżdżała Rachel pod koniec 
+    { q: "Do jakiego miasta wyjeżdżała Rachel pod koniec ostatniego sezonu przed rezygnacją?", options: ["Do Paryża", "Do Londynu", "Do Mediolanu"], answer: 0, exp: "Rachel dostała pracę u Ralpha Laurena w Paryżu." },
+    { q: "W jaki sposób Joey zapamiętał imię dziewczyny w teleturnieju 'Bamboozled'?", options: ["Nie zapamiętał", "Wymyślił postać", "Zapamiętał dzięki kartom"], answer: 0, exp: "Pytanie nawiązuje do skomplikowanych zasad teleturnieju Bamboozled." },
+    { q: "Czym Chandler i Joey odpędzali strach przed duchami w swoim mieszkaniu?", options: ["Fotelami typu Recliner (Roscoe/Rosie)", "Oglądaniem Słonecznego Patrolu", "Grając w piłkarzyki"], answer: 1, exp: "Bohaterowie pasjonowali się oglądaniem serialu 'Słoneczny Patrol' (Baywatch)." },
+    { q: "Która z dziewczyn uderzyła Rossa w twarz podczas gry w futbol amerykański w Dzień Dziękczynienia?", options: ["Monica", "Phoebe", "Rachel"], answer: 0, exp: "Monica rywalizowała z Rossem o puchar 'Geller Cup'." },
+    { q: "Co było trofeum w rodzinnym meczu futbolowym Gellerów?", options: ["Geller Cup (troll przyklejony do deski)", "Srebrny puchar", "Złota piłka"], answer: 0, exp: "Troll przyczepiony do kawałka drewna, wyrzucony kiedyś do jeziora." },
+    { q: "Który z bohaterów jako jedyny nie ma rodzeństwa?", options: ["Chandler", "Joey", "Ross"], answer: 0, exp: "Chandler jest jedynakiem. Joey ma 7 sióstr, Ross i Monica to rodzeństwo, Rachel ma 2 siostry, Phoebe ma siostrę i brata." },
+    { q: "Jak nazywają się siostry Rachel?", options: ["Amy i Jill", "Ursula i Mary", "Erica i Karen"], answer: 0, exp: "Siostry Rachel to Amy (Christina Applegate) oraz Jill (Reese Witherspoon)." },
+    { q: "Jakie słynne słowo wypowiedziała mała Rachel po wypadku w dzieciństwie?", options: ["Shoe (But)", "Daddy", "No"], answer: 0, exp: "Jej pierwszym słowem było 'Shoe'." },
+    { q: "W kim podkochiwał się Chandler w młodości/czasach szkolnych?", options: ["W dziewczynie z reklamy", "W Monice", "W Rachel"], answer: 2, exp: "Pocałował Rachel na imprezie w college'u." },
+    { q: "Z czym zmagała się Monica w czasach nastoletnich?", options: ["Z dużą nadwagą", "Z jąkaniem", "Z brakiem pewności siebie"], answer: 0, exp: "Retrospekcje ukazują grubą Monikę ('Fat Monica')." },
+    { q: "Jak Ross stracił dziewictwo?", options: ["Z Carol w bibliotece/na polanie", "Z Rachel", "Z Julie"], answer: 0, exp: "Ross stracił dziewictwo z Carol na uczelni." },
+    { q: "Jak nazywa się ulubiony zespół muzyczny Rossa i Chandlera ze studiów?", options: ["Way/No Way", "Gandalf", "The Rembrandts"], answer: 0, exp: "Wykonali własny zespół syntetyzatorowy 'Way/No Way'." },
+    { q: "Gdzie pracowała Rachel, kiedy poznała Marka?", options: ["W Fortunoff / Bloomingdale's", "W Guccim", "W Central Perk"], answer: 0, exp: "Mark pomógł jej zdobyć pracę w Bloomingdale's." },
+    { q: "Dlaczego Joey musiał nosić męską torebkę (Ichibaan)?", options: ["Dostał ją od Rachel do stylizacji", "Wygrał zakład", "Dostał jako rekwizyt"], answer: 0, exp: "Rachel ubrała go w męską torbę na przesłuchanie." },
+    { q: "Jaka była japońska reklama szminki dla mężczyzn, w której zagrał Joey?", options: ["Ichiban - Lipstick for men", "Saiko", "Tokyo Lip"], answer: 0, exp: "Joey zagrał w japońskiej reklamie 'Ichiban! Lipstick for men'." },
+    { q: "O co pokłócili się Ross i Rachel podczas nocy, w której spisali 18 stron listu?", options: ["O to, czy Ross przeczytał list i wziął całą odpowiedzialność", "O pieniądze", "O kota"], answer: 0, exp: "List miał 18 stron ('Front and back!'). Ross zasnął podczas czytania." },
+    { q: "Ile stron miał słynny list Rachel do Rossa?", options: ["18 stron (z obu stron!)", "5 stron", "24 strony"], answer: 0, exp: "'18 pages! Front and back!'." },
+    { q: "Jak ma na imię aktor grający Joeya Tribbiani?", options: ["Matt LeBlanc", "Matthew Perry", "David Schwimmer"], answer: 0, exp: "Matt LeBlanc wcielił się w postać Joeya." },
+    { q: "Jak ma na imię aktor grający Chandlera Binga?", options: ["Matthew Perry", "Matt LeBlanc", "David Schwimmer"], answer: 0, exp: "Niezapomniany Matthew Perry zagrał Chandlera." },
+    { q: "Jak ma na imię aktor grający Rossa Gellera?", options: ["David Schwimmer", "Matthew Perry", "Matt LeBlanc"], answer: 0, exp: "David Schwimmer zagrał postać Rossa." },
+    { q: "Jak nazywa się aktorka grająca Monikę Geller?", options: ["Courteney Cox", "Jennifer Aniston", "Lisa Kudrow"], answer: 0, exp: "Courteney Cox zagrała Monikę." },
+    { q: "Jak nazywa się aktorka grająca Rachel Green?", options: ["Jennifer Aniston", "Courteney Cox", "Lisa Kudrow"], answer: 0, exp: "Jennifer Aniston zagrała Rachel." },
+    { q: "Jak nazywa się aktorka grająca Phoebe Buffay?", options: ["Lisa Kudrow", "Jennifer Aniston", "Courteney Cox"], answer: 0, exp: "Lisa Kudrow zagrała postać Phoebe." },
+    { q: "Jaki instrument był ulubionym rekwizytem Phoebe?", options: ["Gitara akustyczna", "Pianino", "Harmonijka"], answer: 0, exp: "Phoebe zawsze grała na gitarze akustycznej." },
+    { q: "Kto z szóstki przyjaciół jako pierwszy dowiedział się o romansie Moniki i Chandlera?", options: ["Joey", "Phoebe", "Rachel"], answer: 0, exp: "Joey odkrył to jako pierwszy (zauważył zalotne gesty i brudną bieliznę)." },
+    { q: "Jak zareagowała Phoebe, gdy zobaczyła Monikę i Chandlera uprawiających seks przez okno?", options: ["Krzyczała: 'My eyes! My eyes!'", "Zaczęła płakać", "Zadzwoniła na policję"], answer: 0, exp: "Kultowy cytat Phoebe: 'CHANDLER AND MONICA! MY EYES! MY EYES!'." },
+    { q: "Jakie imię nosił przystojny instruktor tańca, w którym zakochali się wszyscy w odcinku ze studniówką?", options: ["Nie dotyczy (chodzi o film z prom)", "Roy", "Mark"], answer: 0, exp: "Film wideo ukazuje przygotowania Moniki i Rachel do balu maturalnego." },
+    { q: "Kto zjadł sernik z podłogi na korytarzu z Chandlerem i Rachel?", options: ["Joey (wyciągnął widelczyk z kieszeni)", "Ross", "Phoebe"], answer: 0, exp: "Joey dołączył do nich i wyciągnął własny widelec z marynarki." },
+    { q: "Skąd pochodził genialny sernik, o który walczyli Rachel i Chandler?", options: ["Z Mama's Little Bakery w Chicago", "Z piekarni na Brooklyn", "Z restauracji Moniki"], answer: 0, exp: "Pochodził z 'Mama's Little Bakery' w Chicago." },
+    { q: "Jaki odcień włosów miał Gunther?", options: ["Jaskrawy blond (Bright Blond)", "Ciemny brąz", "Rudy"], answer: 0, exp: "Miał charakterystyczne bardzo ja
